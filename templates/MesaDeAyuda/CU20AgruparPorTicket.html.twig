@@ -1,0 +1,662 @@
+@extends('layoutConstantes.baseLayout')
+
+
+@section('header')
+
+
+    <link href="{{ asset('plugins/bootstrap/css/bootstrap.min.css') }}">
+
+    <!-- JQuery DataTable Css -->
+    <link href="{{ asset('css/jquery.dataTables.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/dataTables.bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/colReorder.bootstrap.min.css') }}" rel="stylesheet">
+
+    <!-- JQuery Nestable Css -->
+    <link href="{{ asset('plugins/nestable/jquery-nestable.css') }}" rel="stylesheet" />
+
+    <!-- Bootstrap Material Datetime Picker Css -->
+    <link href="{{ asset('plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css') }}" rel="stylesheet" />
+
+    <!-- Wait Me Css -->
+    <link href="{{ asset('plugins/waitme/waitMe.css') }}" rel="stylesheet" />
+
+    <!-- Bootstrap Select Css -->
+    <link href="{{ asset('plugins/bootstrap-select/css/bootstrap-select.css') }}" rel="stylesheet" />
+
+
+
+    <script>
+        function sacar() {
+
+            $('#inp1').removeClass('focused');
+            $('#inp2').removeClass('focused');
+            $('#inp3').removeClass('focused');
+            $('#inp4').removeClass('focused');
+            $('#inp5').removeClass('focused');
+            $('#inp6').removeClass('focused');
+            $('#inp7').removeClass('focused');
+        }
+    </script>
+
+@endsection
+
+@section('menu')
+    @include('MesaDeAyuda.menu.CU20menu')
+@endsection
+
+@section('content')
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <h2>VISUALIZAR INFORMACIÓN POR TICKET</h2>
+        </div>
+
+        <!-- Hover Zoom Effect -->
+        <div class="row">
+            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box-4 hover-zoom-effect">
+                    <div class="icon">
+                        <i class="material-icons col-pink">collections_bookmark</i>
+                    </div>
+                    <div class="content">
+                        <div class="text">TICKETS</div>
+                        <div class="number">1542</div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box-4 hover-zoom-effect">
+                    <div class="icon">
+                        <i class="material-icons col-blue">person</i>
+                    </div>
+                    <div class="content">
+                        <div class="text">LEGAJOS</div>
+                        <div class="number">92</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box-4 hover-zoom-effect">
+                    <div class="icon">
+                        <i class="material-icons col-light-blue">check_circle</i>
+                    </div>
+                    <div class="content">
+                        <div class="text">A LA ESPERA OK</div>
+                        <div class="number">154</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box-4 hover-zoom-effect">
+                    <div class="icon">
+
+                        <i class="material-icons col-cyan">lock</i>
+
+                    </div>
+                    <div class="content">
+                        <div class="text">CERRADOS</div>
+                        <div class="number">212</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- #END# Hover Zoom Effect -->
+
+        <!-- Panel de Funciones -->
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header">
+                        <h2>
+                            PANEL DE FUNCIONES
+                            <small>Funciones de impresión o expandir y colapsar la información de la tabla</small>
+                        </h2>
+                        <ul class="header-dropdown m-r--5">
+                            <li class="dropdown">
+                                <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                    <i class="material-icons">more_vert</i>
+                                </a>
+                                <ul class="dropdown-menu pull-right">
+                                    <li><a href="javascript:void(0);">Action</a></li>
+                                    <li><a href="javascript:void(0);">Another action</a></li>
+                                    <li><a href="javascript:void(0);">Something else here</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="body">
+
+                        <a href="{{ url('/CU20AgruparPorTicket2') }}"><button class="btn bg-cyan waves-effect m-b-15" type="button">
+                            <i class="material-icons">print</i>
+                            <span>IMPRIMIR</span>
+                        </button></a>
+                        <button class="btn bg-deep-orange waves-effect m-b-15" type="button" data-toggle="collapse" data-target="#collapseExample2" aria-expanded="false"
+                                aria-controls="collapseExample">
+                            <i class="material-icons">reorder</i>
+                            <span>OPCIONES DE VISUALIZACIÓN</span>
+                        </button>
+
+                        <div class="collapse" id="collapseExample2">
+
+                                <div class="button-demo">
+                                    <button type="button" class="btn bg-grey waves-effect" onclick="expand()">EXPANDIR TODOS</button>
+                                    <button type="button" class="btn bg-grey waves-effect" onclick="collapse()">COLAPSAR TODOS</button>
+                                </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- #END# Panel de funciones -->
+
+
+        <!-- Panel con salida de datos -->
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header">
+                        <h2>
+                            CRITERIOS SELECCIONADOS EN LA BÚSQUEDA
+                        </h2>
+                        <ul class="header-dropdown m-r--5">
+                            <li class="dropdown">
+                                <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown"
+                                   role="button" aria-haspopup="true" aria-expanded="false">
+                                    <i class="material-icons">more_vert</i>
+                                </a>
+                                <ul class="dropdown-menu pull-right">
+                                    <li><a href="javascript:void(0);">Action</a></li>
+                                    <li><a href="javascript:void(0);">Another action</a></li>
+                                    <li><a href="javascript:void(0);">Something else here</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="body">
+                        <form>
+                            <!-- NUMERO DE TICKET Y NUMERO DE LEGAJO -->
+                            <div class="row clearfix">
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <div class="form-group form-float">
+                                        <div id="inp1" class="form-line" >
+                                            <label class="form-label" style=" top: -10px; font-size: 12px;">Número de Ticket</label>
+                                            <input type="text" class="form-control" readonly value="232434" disabled>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <div class="form-group form-float">
+                                        <div id="inp2" class="form-line">
+                                            <label class="form-label" style=" top: -10px; font-size: 12px;">Número de Legajo</label>
+                                            <input type="text" class="form-control" readonly value="2434" disabled>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <div class="form-group form-float">
+                                        <div id="inp7" class="form-line">
+                                            <label class="form-label" style=" top: -10px; font-size: 12px;">Estado</label>
+                                            <input type="text" class="form-control" readonly value="abierto sin derivar" disabled>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!-- CLASIFICACION DE TICKET-->
+                            <div class="row clearfix">
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <div class="form-group form-float">
+                                        <div id="inp3" class="form-line">
+                                            <label class="form-label" style=" top: -10px; font-size: 12px;">Clasificación de Ticket</label>
+                                            <input type="text" class="form-control" disabled readonly value="Problema en el funcionamiento del Sistema Operativo de PC">
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <div class="form-group form-float">
+                                        <div id="inp4" class="form-line">
+                                            <label class="form-label" style=" top: -10px; font-size: 12px;">Grupo de Resolución</label>
+                                            <input type="text" class="form-control" disabled readonly value="Administrador de base de datos">
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <div class="form-group form-float">
+                                        <div id="inp5" class="form-line">
+                                            <div class="demo-masked-input">
+                                                <label class="form-label" style=" top: -10px; font-size: 12px;">Fecha de Creación</label>
+                                                <input type="text" class="form-control" disabled readonly value="30/07/2016">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
+
+                            <!-- FECHA DE CREACION Y ULTIMO CAMBIO -->
+                            <div class="row clearfix">
+
+
+
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <div class="form-group">
+                                        <div id="inp6" class="form-line">
+
+                                            <label class="form-label" style=" top: -10px; font-size: 12px;">Fecha de último cambio de estado</label>
+                                            <input type="text" class="form-control" readonly value="30/07/2016" disabled>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+
+                                    <div class="demo-masked-input">
+                                        <select class="form-control show-tick" title="Orden">
+
+                                            <option>ascendente</option>
+                                            <option>descendete</option>
+
+                                        </select>
+
+                                    </div>
+
+                                </div>
+
+
+
+                            </div>
+
+
+
+
+
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <!-- #END# panel con salida de datos -->
+
+
+
+
+
+        <!-- Exportable Table -->
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header">
+                        <h2>
+                            LISTA DE RESULTADOS
+                        </h2>
+                        <ul class="header-dropdown m-r--5">
+                            <li class="dropdown">
+                                <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                    <i class="material-icons">more_vert</i>
+                                </a>
+                                <ul class="dropdown-menu pull-right">
+                                    <li><a href="javascript:void(0);">Action</a></li>
+                                    <li><a href="javascript:void(0);">Another action</a></li>
+                                    <li><a href="javascript:void(0);">Something else here</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="body">
+                        <div class="table-responsive">
+                            <table id="tabla" class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>Tickets</th>
+
+
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="dd">
+                                            <ol class="dd-list">
+                                                <li class="dd-item" data-id="1">
+                                                    <div class="dd-handle" >
+                                                        <b class="col-pink">NÚMERO DE TICKET: </b><b class="col-grey">222333</b>
+                                                    </div>
+                                                </li>
+                                                <li class="dd-item" data-id="2">
+                                                    <div class="dd-handle col-pink">
+                                                       DATOS DEL USUARIO:
+                                                    </div>
+                                                    <ol class="dd-list">
+                                                        <li class="dd-item" data-id="3">
+                                                            <div class="dd-handle" ><b>Legajo del usuario: </b><b class="col-grey">34543</b></div>
+                                                        </li>
+                                                        <li class="dd-item" data-id="4">
+                                                            <div class="dd-handle" ><b>Apellido: </b><b class="col-grey">Rattero</b></div>
+                                                        </li>
+                                                        <li class="dd-item" data-id="5">
+                                                            <div class="dd-handle" ><b>Nombres: </b><b class="col-grey">Lisandro Adolfo</b></div>
+                                                        </li>
+                                                        <li class="dd-item" data-id="6">
+                                                            <div class="dd-handle" ><b>Teléfono Interno: </b><b class="col-grey">114</b></div>
+                                                        </li>
+                                                        <li class="dd-item" data-id="7">
+                                                            <div class="dd-handle" >Teléfono Directo: </b><b class="col-grey">3424872564</b></div>
+                                                        </li>
+                                                        <li class="dd-item" data-id="2">
+                                                            <div class="dd-handle">Ubicación:</div>
+                                                            <ol class="dd-list">
+                                                                <li class="dd-item" data-id="9">
+                                                                    <div class="dd-handle" ><b>Calle: </b><b class="col-grey">San Martín</b></div>
+                                                                </li>
+                                                                <li class="dd-item" data-id="10">
+                                                                    <div class="dd-handle" ><b>Número: </b><b class="col-grey">2345</b></div>
+                                                                </li>
+                                                                <li class="dd-item" data-id="11">
+                                                                    <div class="dd-handle" ><b>Piso: </b><b class="col-grey">5</b></div>
+                                                                </li>
+                                                                <li class="dd-item" data-id="12">
+                                                                    <div class="dd-handle" ><b>Oficina: </b><b class="col-grey">8</b></div>
+                                                                </li>
+                                                            </ol>
+                                                        </li>
+
+
+
+                                                    </ol>
+                                                </li>
+                                                <li class="dd-item" data-id="13">
+                                                    <div class="dd-handle" >
+                                                        <b class="col-pink">CLASIFICACIÓN ACTUAL DEL TICKET: </b><b class="col-grey">Solicitud de instalación de aplicaciones</b>
+                                                    </div>
+                                                </li>
+                                                <li class="dd-item" data-id="14">
+                                                    <div class="dd-handle" >
+                                                        <b class="col-pink">ESTADO ACTUAL DEL TICKET: </b><b class="col-grey">Abierto derivado</b>
+                                                    </div>
+                                                </li>
+                                                <li class="dd-item" data-id="14">
+                                                    <div class="dd-handle" >
+                                                        <b class="col-pink">TIEMPO ACUMULADO TOTAL DE ATENCIÓN: </b><b class="col-grey">8d-5h-7m</b>
+                                                    </div>
+                                                </li>
+                                                <li class="dd-item " data-id="15">
+                                                    <div class="dd-handle">
+                                                        <b class="col-pink">HISTORIAL CRONOLÓGICO DEL TICKET:</b>
+                                                    </div>
+                                                    <ol class="dd-list">
+                                                        <li class="dd-item" data-id="16">
+                                                            <div class="dd-handle">
+                                                                <b class="col-blue">GRUPOS DE RESOLUCIÓN: </b>
+                                                            </div>
+                                                            <ol class="dd-list">
+                                                                <li class="dd-item" data-id="17">
+                                                                    <div class="dd-handle" >
+                                                                        <b class="col-deep-orange">Grupo de Resolución: </b><b class="col-grey">Administrador SUSE linux</b>
+                                                                    </div>
+                                                                    <ol class="dd-list">
+                                                                        <li class="dd-item" data-id="17">
+                                                                            <div class="dd-handle" >
+                                                                                <b class="col-cyan">Fecha de Asignación al grupo: </b><b class="col-grey">12-02-1981</b>
+                                                                            </div>
+                                                                        </li>
+                                                                        <li class="dd-item" data-id="17">
+                                                                            <div class="dd-handle" >
+                                                                                <b class="col-cyan">Tiempo Real de Atención: </b><b class="col-grey">2d-4h-5m</b>
+                                                                            </div>
+                                                                        </li>
+                                                                        <li class="dd-item" data-id="17">
+                                                                            <div class="dd-handle" >
+                                                                                <b class="col-cyan">Tiempo Total Asignado: </b><b class="col-grey">2d-4h-5m</b>
+                                                                            </div>
+                                                                        </li>
+                                                                    </ol>
+                                                                </li>
+                                                                <li class="dd-item" data-id="17">
+                                                                    <div class="dd-handle" >
+                                                                        <b class="col-deep-orange">Grupo de Resolución: </b><b class="col-grey">Administrador Debian</b>
+                                                                    </div>
+                                                                    <ol class="dd-list">
+                                                                        <li class="dd-item" data-id="17">
+                                                                            <div class="dd-handle" >
+                                                                                <b class="col-cyan">Fecha de Asignación al grupo: </b><b class="col-grey">12-02-1981</b>
+                                                                            </div>
+                                                                        </li>
+                                                                        <li class="dd-item" data-id="17">
+                                                                            <div class="dd-handle" >
+                                                                                <b class="col-cyan">Tiempo Real de Atención: </b><b class="col-grey">2d-4h-5m</b>
+                                                                            </div>
+                                                                        </li>
+                                                                        <li class="dd-item" data-id="17">
+                                                                            <div class="dd-handle" >
+                                                                                <b class="col-cyan">Tiempo Total Asignado: </b><b class="col-grey">2d-4h-5m</b>
+                                                                            </div>
+                                                                        </li>
+                                                                    </ol>
+                                                                </li>
+                                                                <li class="dd-item" data-id="17">
+                                                                    <div class="dd-handle" >
+                                                                        <b class="col-deep-orange">Grupo de Resolución: </b><b class="col-grey">Unidades de soporte</b>
+                                                                    </div>
+                                                                    <ol class="dd-list">
+                                                                        <li class="dd-item" data-id="17">
+                                                                            <div class="dd-handle" >
+                                                                                <b class="col-cyan">Fecha de Asignación al grupo: </b><b class="col-grey">12-02-1981</b>
+                                                                            </div>
+                                                                        </li>
+                                                                        <li class="dd-item" data-id="17">
+                                                                            <div class="dd-handle" >
+                                                                                <b class="col-cyan">Tiempo Real de Atención: </b><b class="col-grey">2d-4h-5m</b>
+                                                                            </div>
+                                                                        </li>
+                                                                        <li class="dd-item" data-id="17">
+                                                                            <div class="dd-handle" >
+                                                                                <b class="col-cyan">Tiempo Total Asignado: </b><b class="col-grey">2d-4h-5m</b>
+                                                                            </div>
+                                                                        </li>
+                                                                    </ol>
+                                                                </li>
+                                                            </ol>
+                                                        </li>
+
+                                                        <li class="dd-item" data-id="16">
+                                                            <div class="dd-handle" >
+                                                                <b class="col-blue">RECLASIFICACIONES: </b>
+                                                            </div>
+                                                            <ol class="dd-list">
+                                                                <li class="dd-item" data-id="17">
+                                                                    <div class="dd-handle" >
+                                                                        <b class="col-deep-orange">Reclacificación: </b>
+                                                                    </div>
+                                                                    <ol class="dd-list">
+                                                                        <li class="dd-item" data-id="17">
+                                                                            <div class="dd-handle" >
+                                                                                <b class="col-cyan">Fecha: </b><b class="col-grey">12-02-1981</b>
+                                                                            </div>
+                                                                        </li>
+                                                                        <li class="dd-item" data-id="17">
+                                                                            <div class="dd-handle" >
+                                                                                <b class="col-cyan">Clasificación Anterior: </b><b class="col-grey">Solicitud de usuario para sistemas informaticos que utiliza la empresa</b>
+                                                                            </div>
+                                                                        </li>
+                                                                        <li class="dd-item" data-id="17">
+                                                                            <div class="dd-handle" >
+                                                                                <b class="col-cyan">Clasificación Nueva: </b><b class="col-grey">Problemas con el correo electrónico</b>
+                                                                            </div>
+                                                                        </li>
+                                                                    </ol>
+                                                                </li>
+                                                                <li class="dd-item" data-id="17">
+                                                                    <div class="dd-handle" >
+                                                                        <b class="col-deep-orange">Reclacificación: </b>
+                                                                    </div>
+                                                                    <ol class="dd-list">
+                                                                        <li class="dd-item" data-id="17">
+                                                                            <div class="dd-handle" >
+                                                                                <b class="col-cyan">Fecha: </b><b class="col-grey">12-02-1981</b>
+                                                                            </div>
+                                                                        </li>
+                                                                        <li class="dd-item" data-id="17">
+                                                                            <div class="dd-handle" >
+                                                                                <b class="col-cyan">Clasificación Anterior: </b><b class="col-grey">Solicitud de usuario para sistemas informaticos que utiliza la empresa</b>
+                                                                            </div>
+                                                                        </li>
+                                                                        <li class="dd-item" data-id="17">
+                                                                            <div class="dd-handle" >
+                                                                                <b class="col-cyan">Clasificación Nueva: </b><b class="col-grey">Problemas con el correo electrónico</b>
+                                                                            </div>
+                                                                        </li>
+                                                                    </ol>
+                                                                </li>
+                                                                <li class="dd-item" data-id="17">
+                                                                    <div class="dd-handle" >
+                                                                        <b class="col-deep-orange">Reclacificación: </b>
+                                                                    </div>
+                                                                    <ol class="dd-list">
+                                                                        <li class="dd-item" data-id="17">
+                                                                            <div class="dd-handle" >
+                                                                                <b class="col-cyan">Fecha: </b><b class="col-grey">12-02-1981</b>
+                                                                            </div>
+                                                                        </li>
+                                                                        <li class="dd-item" data-id="17">
+                                                                            <div class="dd-handle" >
+                                                                                <b class="col-cyan">Clasificación Anterior: </b><b class="col-grey">Solicitud de usuario para sistemas informaticos que utiliza la empresa</b>
+                                                                            </div>
+                                                                        </li>
+                                                                        <li class="dd-item" data-id="17">
+                                                                            <div class="dd-handle" >
+                                                                                <b class="col-cyan">Clasificación Nueva: </b><b class="col-grey">Problemas con el correo electrónico</b>
+                                                                            </div>
+                                                                        </li>
+                                                                    </ol>
+                                                                </li>
+                                                                <li class="dd-item" data-id="17">
+                                                                    <div class="dd-handle" >
+                                                                        <b class="col-deep-orange">Reclacificación: </b>
+                                                                    </div>
+                                                                    <ol class="dd-list">
+                                                                        <li class="dd-item" data-id="17">
+                                                                            <div class="dd-handle" >
+                                                                                <b class="col-cyan">Fecha: </b><b class="col-grey">12-02-1981</b>
+                                                                            </div>
+                                                                        </li>
+                                                                        <li class="dd-item" data-id="17">
+                                                                            <div class="dd-handle" >
+                                                                                <b class="col-cyan">Clasificación Anterior: </b><b class="col-grey">Solicitud de usuario para sistemas informaticos que utiliza la empresa</b>
+                                                                            </div>
+                                                                        </li>
+                                                                        <li class="dd-item" data-id="17">
+                                                                            <div class="dd-handle" >
+                                                                                <b class="col-cyan">Clasificación Nueva: </b><b class="col-grey">Problemas con el correo electrónico</b>
+                                                                            </div>
+                                                                        </li>
+                                                                    </ol>
+                                                                </li>
+                                                            </ol>
+                                                        </li>
+                                                    </ol>
+                                                </li>
+                                            </ol>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- #END# Exportable Table -->
+
+    </div>
+</section>
+@endsection
+
+
+@section('footer')
+
+
+<!-- Select Plugin Js -->
+<script src="{{ asset('plugins/bootstrap-select/js/bootstrap-select.js') }}"></script>
+
+<!-- Slimscroll Plugin Js -->
+<script src="{{ asset('plugins/jquery-slimscroll/jquery.slimscroll.js') }}"></script>
+
+<!-- Jquery Nestable -->
+<script src="{{ asset('plugins/nestable/jquery.nestable.js') }}"></script>
+
+<!-- Autosize Plugin Js -->
+<script src="{{ asset('plugins/autosize/autosize.js') }}"></script>
+
+<!-- Moment Plugin Js -->
+<script src="{{ asset('plugins/momentjs/moment.js') }}"></script>
+
+<!-- Bootstrap Material Datetime Picker Plugin Js -->
+<script src="{{ asset('plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
+
+<!-- Custom Js -->
+
+<script src="{{ asset('js/pages/forms/basic-form-elements.js') }}"></script>
+
+<script src="{{ asset('js/pages/ui/sortable-nestable.js') }}"></script>
+
+<!-- Jquery DataTable Plugin Js -->
+<script src="{{ asset('plugins/datatables/jquery.dataTables.js') }}"></script>
+
+
+<script>
+    $(document).ready(function() {
+        $('#tabla').DataTable({"language": {
+            "search": "Buscar:",
+            "zeroRecords": "No se encontraron Resultados",
+            "infoFiltered": " - filtrado sobre _MAX_ entradas",
+            "infoEmpty": "Ninguna Entrada para mostrar",
+            "paginate": {
+                "first":      "Primero",
+                "last":       "Último",
+                "next":       "Próximo",
+                "previous":   "Previo"
+            },"lengthMenu":     "Mostrar _MENU_ entradas",
+            "info":           "Mostrando _START_ de _END_ de _TOTAL_ entradas",
+            colReorder: true
+        }
+        });
+
+
+    } );
+</script>
+
+<script type="text/javascript">
+    function collapse(){
+        $('.dd').nestable('collapseAll');
+    }
+    function expand(){
+        $('.dd').nestable('expandAll');
+    }
+</script>
+
+
+    @endsection

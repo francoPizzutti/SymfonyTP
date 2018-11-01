@@ -1,0 +1,75 @@
+{% extends 'layout/appLogin.html.twig' %}
+
+{% block content %}
+    <div class="login-box">
+        <div class="logo">
+            <br>
+        </div>
+        <div class="card">
+            <div class="body">
+                <form action="{{ path('login') }}" method="post">
+
+                    <div class="msg">Inicio de Sesión</div>
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <i class="material-icons">person</i>
+                        </span>
+                        <div class="form-line">
+                            <input type="text" id="username" name="_username" class="form-control" value="{{ last_username }}" placeholder="Username" />
+
+                            {% if error %}
+
+                                <span class="invalid-feedback" role="alert">
+                                        <strong>{{ error.messageKey|trans(error.messageData, 'security') }}</strong>
+                                    </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <i class="material-icons">lock</i>
+                        </span>
+                        <div class="form-line">
+                            <input type="password" id="password" name="_password" class="form-control" placeholder="Password"/>
+                            {% if error %}
+
+                                <span class="invalid-feedback" role="alert">
+                                        <strong>{{ error.messageKey|trans(error.messageData, 'security') }}</strong>
+                                    </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-8 p-t-5">
+                            <input type="checkbox" name="rememberme" id="rememberme" class="filled-in chk-col-pink">
+                            <label for="rememberme">Recordarme</label>
+                        </div>
+                        <div class="col-xs-4">
+                            <button class="btn btn-block bg-pink waves-effect" type="submit">INGRESAR</button>
+                        </div>
+                    </div>
+                    <div class="row m-t-15 m-b--20">
+                        <div class="col-xs-6">
+                            <a href="{{ path('register') }}">Registrar ahora!</a>
+                        </div>
+                        <div class="col-xs-6 align-right">
+                            <a href="#">Olvido su contraseña?</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{# templates/security/login.html.twig #}
+{# ... you will probably extend your base template, like base.html.twig #}
+
+
+
+
+
+
+
+
+

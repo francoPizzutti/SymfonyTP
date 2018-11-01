@@ -1,0 +1,14 @@
+
+.borded{
+    border-color: black;
+    border: 2px solid;
+}
+.center{
+    text-align: center;
+}
+.left{
+    text-align: left;
+}
+.right{
+    text-align: right;
+}

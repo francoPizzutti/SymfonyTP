@@ -1,0 +1,113 @@
+{% extends 'layout/appRegister.html.twig' %}
+
+{% block content %}
+    <div class="signup-box">
+
+        <div class="card">
+            <div class="body">
+                {{ form_start(form) }}
+
+
+
+                <div class="msg">Registrar un nuevo miembro</div>
+
+                <div class="input-group">
+                        <span class="input-group-addon">
+                            <i class="material-icons">person</i>
+                        </span>
+                    <div class="form-line">
+
+                        {{ form_widget(form.username, {'attr': {'class': 'form-control', 'placeholder': 'Username'}}) }}
+
+
+                    </div>
+                </div>
+
+
+                <div class="input-group">
+                        <span class="input-group-addon">
+                            <i class="material-icons">email</i>
+                        </span>
+                    <div class="form-line">
+
+                        {{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'Email de Usuario'}}) }}
+
+
+                    </div>
+                </div>
+
+
+
+                <div class="input-group">
+                        <span class="input-group-addon">
+                            <i class="material-icons">lock</i>
+                        </span>
+                    <div class="form-line">
+                        {{ form_widget(form.password, {'attr': {'class': 'form-control', 'placeholder': 'Password'}}) }}
+
+
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+
+                    {{ form_widget(form.isActive, {'attr': {'class': 'filled-in chk-col-pink'}}) }}
+                    {{ form_label(form.isActive) }}
+                </div>
+
+                <div class="input-group">
+                        <span class="input-group-addon">
+                            <i class="material-icons">build</i>
+                        </span>
+                    <div class="form-line">
+                        {{ form_widget(form.Nivel, {'attr': {'class': 'form-control', 'placeholder': 'Nivel'}}) }}
+
+
+                    </div>
+                </div>
+
+                <div class="input-group">
+                        <span class="input-group-addon">
+                            <i class="material-icons">directions_run</i>
+                        </span>
+                    <div class="form-line">
+                        {{ form_widget(form.Empleado, {'attr': {'class': 'form-control'}}) }}
+
+
+                    </div>
+                </div>
+
+                <div class="input-group">
+                        <span class="input-group-addon">
+                            <i class="material-icons">layers</i>
+                        </span>
+                    <div class="form-line">
+                        {{ form_widget(form.GrupoResolucion, {'attr': {'class': 'form-control'}}) }}
+
+
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <input type="checkbox" name="terms" id="terms" class="filled-in chk-col-pink">
+                    <label for="terms">He leido y acepto los <a href="javascript:void(0);">terminos de uso</a>.</label>
+                </div>
+
+                <button class="btn btn-block btn-lg bg-pink waves-effect" type="submit">REGISTRAR</button>
+
+                <div class="m-t-25 m-b--5 align-center">
+
+
+                    <a href="{{ path('login') }}">Usted ya es un usuario registrado?</a>
+
+
+
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

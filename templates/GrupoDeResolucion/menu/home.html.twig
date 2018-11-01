@@ -1,0 +1,59 @@
+<!-- Menu -->
+<div class="menu">
+    <ul class="list">
+        <li class="header">BARRA DE NAVEGACIÓN</li>
+		<li class="active">
+            <a href="{{ path('home') }}">
+                <i class="material-icons">home</i>
+                <span>home</span>
+            </a>
+
+        </li>
+        <li>
+            <a href="javascript:void(0);" class="menu-toggle">
+                <i class="material-icons">find_in_page</i>
+                <span>Consultar intervenciones</span>
+            </a>
+            <ul class="ml-menu">
+                <li>
+                    <a href="{{ url('ConsultarIntervenciones') }}">Consultar Intervención</a>
+                </li>
+                <li>
+                    <a href="javascript:void(0);">Actualizar estado intervención</a>
+                </li>
+                <li>
+                    <a href="javascript:void(0);">Modificar comentarios</a>
+                </li>
+
+
+            </ul>
+        </li>
+        <li>
+            <a href="{{ url('RegistrarClasificacionDeTickets') }}">
+                <i class="material-icons">library_add</i>
+                <span>Registrar clasificación de ticket</span>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:void(0);" class="menu-toggle">
+                <i class="material-icons">search</i>
+                <span>Buscar clasificación de ticket</span>
+            </a>
+            <ul class="ml-menu">
+                <li>
+                    <a href="{{ url('BuscarClasifTicketsParte1') }}">Buscar clasificación</a>
+                </li>
+                <li>
+                    <a href="javascript:void(0);">Modificar clasificación de ticket</a>
+                </li>
+                <li>
+                    <a href="javascript:void(0);">Borrar clasificación de ticket</a>
+                </li>
+
+
+            </ul>
+        </li>
+
+    </ul>
+</div>
+<!-- #Menu -->

@@ -1,0 +1,96 @@
+#index:
+#    path: /
+#    controller: App\Controller\DefaultController::index
+
+index:
+    path: /
+    controller: App\Controller\HomeController::index
+
+register:
+    path:       /register
+    controller: App\Controller\RegistrationController::register
+
+login:
+    path:       /login
+    controller: App\Controller\SecurityController::login
+
+home:
+    path:       /home
+    controller: App\Controller\HomeController::home
+
+
+logout:
+    path:       /logout
+    controller: App\Controller\SecurityController::logout
+
+
+
+
+#---------------------------------------------------------------------------------------------------------------------#
+#-------RUTAS PARA LA MESA DE AYUDA----------#
+#---------------------------------------------------------------------------------------------------------------------#
+CU01registrarTicket:
+              path:     /CU01registrarTicket
+              controller: App\Controller\TicketController::RegistrarTicket
+
+CU01registrarTicket2:
+              path:     /CU01AccionesRqueridas
+              controller: App\Controller\TicketController::AccionesRqueridas
+
+CU02ConsultarTicket:
+              path:     /CU02ConsultarTicket
+              controller: App\Controller\TicketController::ConsultarTicket
+
+CU02ConsultarTicket2:
+              path:     /CU02ConsultarTicket2
+              controller: App\Controller\TicketController::VerListaTicket
+
+DetalleTicket:
+              path:     /CU02ConsultarTicket3/{id}
+              controller: App\Controller\TicketController::VerDetalleTicket
+
+CU04DerivarTicket:
+              path:     /CU04DerivarTicket/{id}
+              controller: App\Controller\TicketController::DerivarTicket
+
+CU03CerrarTicket:
+              path:     /CU03CerrarTicket/{id}
+              controller: App\Controller\TicketController::CerrarTicket
+
+
+CU20AgruparPorTicket:
+              path:     /CU20AgruparPorTicket
+              controller: App\Controller\TicketController::VerListaTicket
+
+CU21AgruparPorLegajo:
+              path:     /CU21AgruparPorLegajo
+              controller: App\Controller\TicketController::VerListaTicket
+
+CU22AgruparPorEstado:
+              path:     /CU22AgruparPorEstado
+              controller: App\Controller\TicketController::VerListaTicket
+
+CU23AgruparPorUltimoGrupo:
+              path:     /CU23AgruparPorUltimoGrupo
+              controller: App\Controller\TicketController::VerListaTicket
+
+CU24AgruparPorClasificacionTicket:
+              path:     /CU24AgruparPorClasificacionTicket
+              controller: App\Controller\TicketController::VerListaTicket
+
+#---------------------------------------------------------------------------------------------------------------------#
+#------RUTAS PARA LOS GRUPOS DE RESOLUCION----#
+#---------------------------------------------------------------------------------------------------------------------#
+
+ConsultarIntervenciones:
+    path:       /CU07ConsultarIntervenciones
+    controller: App\Controller\HomeController::index
+
+RegistrarClasificacionDeTickets:
+    path:      /CU10RegistrarClasificacionDeTickets
+    controller: App\Controller\HomeController::index
+
+
+BuscarClasifTicketsParte1:
+    path:       /CU11BuscarClasifTicketsParte1
+    controller: App\Controller\HomeController::index

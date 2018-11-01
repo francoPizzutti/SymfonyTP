@@ -1,0 +1,505 @@
+     ------------------------------------------------------------------------------------------------------------------------------------
+     COMIENZO REGISTRO DE USUARIO
+     ------------------------------------------------------------------------------------------------------------------------------------
+
+//creamos primero la base de datos
+php bin/console doctrine:database:create
+
+// creamos la entidad User con los siguientes campos
+username
+email
+password
+isActive(bool)
+roles(string)
+
+// implementamos UserInterface y Serializable
+
+class User implements UserInterface, \Serializable
+
+// implementamos el metodo getRoles
+public function getRoles()
+{
+    return array('ROLE_USER');
+}
+
+
+agregamos las siguientes restricciones a la entidad
+
+/**
+ * @ORM\Entity
+ * @UniqueEntity(fields="email", message="Email already taken")
+ * @UniqueEntity(fields="username", message="Username already taken")
+ */
+
+
+ /**
+      * @ORM\Column(type="string", length=255, unique=true)
+      * @Assert\NotBlank()
+      * @Assert\Email()
+      */
+
+agregamos las dos siguientes librerias a la entidad user
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+
+creamos el formulario que capturara la entidad
+
+namespace App\Form;
+
+use App\Entity\User;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
+class UserType extends AbstractType
+{
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $builder
+                    ->add('username', TextType::class)
+                    ->add('email', EmailType::class)
+                    ->add('password', RepeatedType::class, array(
+                        'type' => PasswordType::class,
+                        'first_options'  => array('label' => 'Password'),
+                        'second_options' => array('label' => 'Repeat Password'),
+                    ))
+                    ->add('isActive', CheckboxType::class, array(
+                        'label'    => 'Is Active?',
+                        'required' => false,
+                    ));
+
+
+
+
+creamos el controller RegistrationController
+
+
+namespace App\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Annotation\Route;
+use App\Form\UserType;
+use App\Entity\User;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+
+class RegistrationController extends AbstractController
+{
+    /**
+     * @Route("/register", name="user_registration")
+     */
+    public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder)
+    {
+        // 1) build the form
+        $user = new User();
+        $form = $this->createForm(UserType::class, $user);
+
+        // 2) handle the submit (will only happen on POST)
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            // 3) Encode the password (you could also do this via Doctrine listener)
+            $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
+            $user->setPassword($password);
+
+             $user->setRoles();
+
+
+            // 4) save the User!
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            // ... do any other work - like sending them an email, etc
+            // maybe set a "flash" success message for the user
+
+            return $this->redirectToRoute('replace_with_some_route');
+        }
+
+        return $this->render(
+            'registration/register.html.twig',
+            array('form' => $form->createView())
+        );
+    }
+    public function index()
+    {
+        return $this->render('registration/index.html.twig', [
+            'controller_name' => 'RegistrationController',
+        ]);
+    }
+}
+
+agregamos la sguiente linea a security.yaml
+
+# config/packages/security.yaml
+security:
+    encoders:
+        App\Entity\User: bcrypt
+
+
+copia de security.yaml
+security:
+    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
+    providers:
+        in_memory: { memory: ~ }
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        main:
+            anonymous: true
+
+            # activate different ways to authenticate
+
+            # http_basic: true
+            # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
+
+            # form_login: true
+            # https://symfony.com/doc/current/security/form_login_setup.html
+
+    # Easy way to control access for large sections of your site
+    # Note: Only the *first* access control that matches will be used
+    access_control:
+        # - { path: ^/admin, roles: ROLE_ADMIN }
+        # - { path: ^/profile, roles: ROLE_USER }
+
+fin copia security.yaml
+
+
+creamos la vista
+  <script src="{{ asset('js/granim.js-1.1.0/dist/granim.js') }}"></script>
+  <!-- Custom Css -->
+      <link href="{{ asset('css/style.css') }}" rel="stylesheet">
+   {{ form_widget(form.Email, {'attr': {'class': 'form-control', 'placeholder': 'Email de Operario'}}) }}
+
+
+   creamos la ruta
+
+register:
+    path: /register
+    controller: App\Controller\RegistrationController::register
+
+
+    migramos
+     php bin/console doctrine:migrations:diff
+     php bin/console doctrine:migrations:migrate
+
+
+     ------------------------------------------------------------------------------------------------------------------------------------
+     FIN REGISTRO DE USUARIO
+     ------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+     ------------------------------------------------------------------------------------------------------------------------------------
+     COMIENZO DE LOGIN
+     ------------------------------------------------------------------------------------------------------------------------------------
+1)----COMENZAMOS POR SECURITY.YAML
+ firewalls:
+        main:
+            anonymous: ~
+            form_login:
+                login_path: login
+                check_path: login
+
+
+                #----------------------ASI QUEDO EL SECURITY.YAML QUE ANDA----------------#
+               security:
+                   # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
+                   encoders:
+                           App\Entity\User:
+                               algorithm: bcrypt
+                   providers:
+                      our_db_provider:
+                                      entity:
+                                          class: App\Entity\User
+                                          property: username
+                   firewalls:
+                           main:
+                               anonymous: ~
+                               provider: our_db_provider
+                               form_login:
+                                   login_path: login
+                                   check_path: login
+                                   default_target_path: index
+
+
+
+                           # activate different ways to authenticate
+
+                           # http_basic: true
+                           # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
+
+                           # form_login: true
+                           # https://symfony.com/doc/current/security/form_login_setup.html
+
+                   # Easy way to control access for large sections of your site
+                   # Note: Only the *first* access control that matches will be used
+                   #access_control:
+                       # - { path: ^/admin, roles: ROLE_ADMIN }
+                       # - { path: ^/profile, roles: ROLE_USER }
+               #------------------------------------------------------------------------------------------------#
+
+
+               #-------------------------------LA ENTIDAD USER QUE ANDA-----------------------------------------#
+
+               <?php
+
+               namespace App\Entity;
+
+               use Doctrine\ORM\Mapping as ORM;
+               use Symfony\Component\Validator\Constraints as Assert;
+               use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+               use Symfony\Component\Security\Core\User\UserInterface;
+
+               /**
+                * @ORM\Entity
+                * @UniqueEntity(fields="email", message="Email already taken")
+                * @UniqueEntity(fields="username", message="Username already taken")
+                */
+               class User implements UserInterface, \Serializable
+               {
+                   /**
+                    * @ORM\Id()
+                    * @ORM\GeneratedValue()
+                    * @ORM\Column(type="integer")
+                    */
+                   private $id;
+
+                   /**
+                    * @ORM\Column(type="string", length=255, unique=true)
+                    * @Assert\NotBlank()
+                    */
+                   private $username;
+
+                   /**
+                    * @ORM\Column(type="string", length=255, unique=true)
+                    * @Assert\NotBlank()
+                    */
+                   private $email;
+
+                   /**
+                    * @ORM\Column(type="string", length=255)
+                    */
+                   private $password;
+
+                   /**
+                    * @ORM\Column(type="boolean")
+                    */
+                   private $isActive;
+
+                   /**
+                    * @ORM\Column(type="string", length=255)
+                    */
+                   private $roles;
+
+                   public function getId(): ?int
+                   {
+                       return $this->id;
+                   }
+
+                   public function getUsername(): ?string
+                   {
+                       return $this->username;
+                   }
+
+                   public function setUsername(string $username): self
+                   {
+                       $this->username = $username;
+
+                       return $this;
+                   }
+
+                   public function getEmail(): ?string
+                   {
+                       return $this->email;
+                   }
+
+                   public function setEmail(string $email): self
+                   {
+                       $this->email = $email;
+
+                       return $this;
+                   }
+
+                   public function getPassword(): ?string
+                   {
+                       return $this->password;
+                   }
+
+                   public function setPassword(string $password): self
+                   {
+                       $this->password = $password;
+
+                       return $this;
+                   }
+
+                   public function getIsActive(): ?bool
+                   {
+                       return $this->isActive;
+                   }
+
+                   public function setIsActive(bool $isActive): self
+                   {
+                       $this->isActive = $isActive;
+
+                       return $this;
+                   }
+
+                   public function getRoles()
+                   {
+                       return array('ROLE_ADMIN');
+                   }
+
+
+                   public function setRoles(): self
+                   {
+                       $this->roles = 'ROLE_ADMIN';
+
+                       return $this;
+                   }
+
+                   /**
+                    * String representation of object
+                    * @link http://php.net/manual/en/serializable.serialize.php
+                    * @return string the string representation of the object or null
+                    * @since 5.1.0
+                    */
+                   public function serialize()
+                   {
+                       return serialize(array(
+                           $this->id,
+                           $this->username,
+                           $this->password,
+                           $this->isActive,
+                           // see section on salt below
+                           // $this->salt,
+                       ));
+                   }
+
+                   /**
+                    * Constructs the object
+                    * @link http://php.net/manual/en/serializable.unserialize.php
+                    * @param string $serialized <p>
+                    * The string representation of the object.
+                    * </p>
+                    * @return void
+                    * @since 5.1.0
+                    */
+                   public function unserialize($serialized)
+                   {
+                       // TODO: Implement unserialize() method.
+                       list (
+                           $this->id,
+                           $this->username,
+                           $this->password,
+                           $this->isActive,
+                           // see section on salt below
+                           // $this->salt
+                           ) = unserialize($serialized, array('allowed_classes' => false));
+                   }
+
+                   /**
+                    * Returns the salt that was originally used to encode the password.
+                    *
+                    * This can return null if the password was not encoded using a salt.
+                    *
+                    * @return string|null The salt
+                    */
+                   public function getSalt()
+                   {
+                       // TODO: Implement getSalt() method.
+                   }
+
+                   /**
+                    * Removes sensitive data from the user.
+                    *
+                    * This is important if, at any given point, sensitive information like
+                    * the plain-text password is stored on this object.
+                    */
+                   public function eraseCredentials()
+                   {
+                       // TODO: Implement eraseCredentials() method.
+                   }
+               }
+#---------------------------------------------------------------------------------------------------------------------------#
+
+
+
+#----------------------------------------ASI QUEDO EL FORMULARIO QUE ANDA---------------------------------------------------#
+               <?php
+
+               namespace App\Form;
+
+               use App\Entity\User;
+               use Symfony\Component\Form\AbstractType;
+               use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+               use Symfony\Component\Form\Extension\Core\Type\EmailType;
+               use Symfony\Component\Form\Extension\Core\Type\TextType;
+               use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+               use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+               use Symfony\Component\Form\FormBuilderInterface;
+               use Symfony\Component\OptionsResolver\OptionsResolver;
+
+               class UserType extends AbstractType
+               {
+                   public function buildForm(FormBuilderInterface $builder, array $options)
+                   {
+                       $builder
+                           ->add('username', TextType::class)
+                           ->add('email', EmailType::class)
+                           ->add('password', RepeatedType::class, array(
+                               'type' => PasswordType::class,
+                               'first_options'  => array('label' => 'Password'),
+                               'second_options' => array('label' => 'Repeat Password'),
+                           ))
+                           ->add('isActive', CheckboxType::class, array(
+                               'label'    => 'Is Active?',
+                               'required' => false,
+                           ));
+
+                   }
+
+                   public function configureOptions(OptionsResolver $resolver)
+                   {
+                       $resolver->setDefaults([
+                           'data_class' => User::class,
+                       ]);
+                   }
+               }
+
+#----------------------------------------------------------------------------------------------------------------------#
+
+
+
+#-------------------------------------------ASI QUEDO EL METODO EN EL CONTROLLER---------------------------------------#
+public function login(AuthenticationUtils $authenticationUtils)
+    {
+        // get the login error if there is one
+        $error = $authenticationUtils->getLastAuthenticationError();
+
+        // last username entered by the user
+        $lastUsername = $authenticationUtils->getLastUsername();
+
+        return $this->render('security/login.html.twig', array(
+            'last_username' => $lastUsername,
+            'error'         => $error,
+        ));
+    }
+
+ #------------------------------------------------------------------------------------------------------------------#
+
+
+
+
+
+     ------------------------------------------------------------------------------------------------------------------------------------
+     LOGIN DE LOGIN
+     ------------------------------------------------------------------------------------------------------------------------------------
