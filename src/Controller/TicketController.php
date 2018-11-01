@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -25,8 +26,10 @@ class TicketController extends AbstractController
 
     }
 
+    /* FUNCIONES PARA EL REGISTRO DE TICKET */
+
     public function RegistrarTicket(){
-        if ($this->getUser()!= null) {
+        if ($this->getUser()!= null && $this->getUser()->getNivel()==0) {
             $titulo = 'Registrar Nuevo Ticket';
             $load = '';
             return $this->render('MesaDeAyuda/CU01registrarticket.html.twig', [
@@ -38,6 +41,13 @@ class TicketController extends AbstractController
         else return $this->redirectToRoute('index');
 
     }
+
+public function ProcesarRegistrarTicket(Request $request){
+    return $this->redirectToRoute('index');
+}
+/* END REGISTRO DE TICKET*/
+
+
     public function AccionesRqueridas(){
         if ($this->getUser()!= null) {
             $titulo = 'Acciones Rqueridas';

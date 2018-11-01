@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -36,6 +38,16 @@ class GrupoResolucion
      * @ORM\JoinColumn(nullable=false)
      */
     private $Estado;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Intervencion", mappedBy="Grupo_Resolucion")
+     */
+    private $Intervenciones;
+
+    public function __construct()
+    {
+        $this->Intervenciones = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -92,6 +104,37 @@ class GrupoResolucion
 
     public function __toString() {
         return $this->Nombre;
+    }
+
+    /**
+     * @return Collection|Intervencion[]
+     */
+    public function getIntervenciones(): Collection
+    {
+        return $this->Intervenciones;
+    }
+
+    public function addIntervencione(Intervencion $intervencione): self
+    {
+        if (!$this->Intervenciones->contains($intervencione)) {
+            $this->Intervenciones[] = $intervencione;
+            $intervencione->setGrupoResolucion($this);
+        }
+
+        return $this;
+    }
+
+    public function removeIntervencione(Intervencion $intervencione): self
+    {
+        if ($this->Intervenciones->contains($intervencione)) {
+            $this->Intervenciones->removeElement($intervencione);
+            // set the owning side to null (unless already changed)
+            if ($intervencione->getGrupoResolucion() === $this) {
+                $intervencione->setGrupoResolucion(null);
+            }
+        }
+
+        return $this;
     }
 
 }
