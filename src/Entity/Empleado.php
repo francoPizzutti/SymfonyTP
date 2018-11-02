@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -50,6 +52,16 @@ class Empleado
      * @ORM\OneToOne(targetEntity="App\Entity\Direccion", cascade={"persist", "remove"})
      */
     private $Direccion;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Ticket", mappedBy="Empleado")
+     */
+    private $Tickets;
+
+    public function __construct()
+    {
+        $this->Tickets = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -143,5 +155,36 @@ class Empleado
     public function __toString() {
         $nc = $this->Nombre." ".$this->Apellido;
         return $nc;
+    }
+
+    /**
+     * @return Collection|Ticket[]
+     */
+    public function getTickets(): Collection
+    {
+        return $this->Tickets;
+    }
+
+    public function addTicket(Ticket $ticket): self
+    {
+        if (!$this->Tickets->contains($ticket)) {
+            $this->Tickets[] = $ticket;
+            $ticket->setEmpleado($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTicket(Ticket $ticket): self
+    {
+        if ($this->Tickets->contains($ticket)) {
+            $this->Tickets->removeElement($ticket);
+            // set the owning side to null (unless already changed)
+            if ($ticket->getEmpleado() === $this) {
+                $ticket->setEmpleado(null);
+            }
+        }
+
+        return $this;
     }
 }

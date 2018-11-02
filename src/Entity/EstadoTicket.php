@@ -1,0 +1,57 @@
+<?php
+
+namespace App\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity(repositoryClass="App\Repository\EstadoTicketRepository")
+ */
+class EstadoTicket
+{
+    /**
+     * @ORM\Id()
+     * @ORM\GeneratedValue()
+     * @ORM\Column(type="integer")
+     */
+    private $id;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $Id_Estado;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $Descripcion;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getIdEstado(): ?int
+    {
+        return $this->Id_Estado;
+    }
+
+    public function setIdEstado(int $Id_Estado): self
+    {
+        $this->Id_Estado = $Id_Estado;
+
+        return $this;
+    }
+
+    public function getDescripcion(): ?string
+    {
+        return $this->Descripcion;
+    }
+
+    public function setDescripcion(?string $Descripcion): self
+    {
+        $this->Descripcion = $Descripcion;
+
+        return $this;
+    }
+}

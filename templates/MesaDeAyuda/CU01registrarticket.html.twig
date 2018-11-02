@@ -60,7 +60,7 @@
                         </ul>
                     </div>
                     <div class="body">
-                        <form id="form2">
+                        <form id="form2" method="post" action="{{ path('CU01ProcesarTicket') }}">
                             <!-- FECHA Y HORA DE REGISTRO -->
                             <div class="row clearfix">
                                 <div class="col-sm-6">
@@ -83,6 +83,7 @@
                                 </div>
 
                             </div>
+
                             <div class="row clearfix">
                                 <div class="col-sm-6">
                                     <div class="form-group form-float">
@@ -147,9 +148,6 @@
 
 
                             </div>
-
-
-
                             <!-- BOTONES-->
                             <div class="row clearfix">
 
@@ -164,7 +162,6 @@
                                     </div>
                                 </div>
                             </div>
-
 
                         </form>
                     </div>

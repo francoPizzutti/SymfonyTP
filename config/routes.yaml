@@ -32,6 +32,12 @@ logout:
 CU01registrarTicket:
               path:     /CU01registrarTicket
               controller: App\Controller\TicketController::RegistrarTicket
+              methods: [GET]
+
+CU01ProcesarTicket:
+              path:     /CU01ProcesarTicket
+              controller: App\Controller\TicketController::ProcesarRegistrarTicket
+              methods: [GET]
 
 CU01registrarTicket2:
               path:     /CU01AccionesRqueridas

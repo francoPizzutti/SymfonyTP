@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -62,6 +64,16 @@ class User implements UserInterface, \Serializable
      * @ORM\OneToOne(targetEntity="App\Entity\Empleado", cascade={"persist", "remove"})
      */
     private $Empleado;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Ticket", mappedBy="User")
+     */
+    private $Tickets;
+
+    public function __construct()
+    {
+        $this->Tickets = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -228,6 +240,37 @@ class User implements UserInterface, \Serializable
     public function setEmpleado(?Empleado $Empleado): self
     {
         $this->Empleado = $Empleado;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Ticket[]
+     */
+    public function getTickets(): Collection
+    {
+        return $this->Tickets;
+    }
+
+    public function addTicket(Ticket $ticket): self
+    {
+        if (!$this->Tickets->contains($ticket)) {
+            $this->Tickets[] = $ticket;
+            $ticket->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTicket(Ticket $ticket): self
+    {
+        if ($this->Tickets->contains($ticket)) {
+            $this->Tickets->removeElement($ticket);
+            // set the owning side to null (unless already changed)
+            if ($ticket->getUser() === $this) {
+                $ticket->setUser(null);
+            }
+        }
 
         return $this;
     }
