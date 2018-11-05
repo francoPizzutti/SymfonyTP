@@ -73,6 +73,7 @@ class User implements UserInterface, \Serializable
     public function __construct()
     {
         $this->Tickets = new ArrayCollection();
+        $this->setRoles("un rol");
     }
 
     public function getId(): ?int
