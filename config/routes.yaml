@@ -35,9 +35,9 @@ CU01registrarTicket:
               methods: [GET]
 
 CU01ProcesarTicket:
-              path:     /CU01ProcesarTicket
+              path:     /CU01registrarTicket
               controller: App\Controller\TicketController::ProcesarRegistrarTicket
-              methods: [GET]
+              methods: [POST]
 
 CU01registrarTicket2:
               path:     /CU01AccionesRqueridas

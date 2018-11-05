@@ -60,14 +60,14 @@
                         </ul>
                     </div>
                     <div class="body">
-                        <form id="form2" method="post" action="{{ path('CU01ProcesarTicket') }}">
+                        <form id="formulario" method="post" action="{{ path('CU01ProcesarTicket') }}">
                             <!-- FECHA Y HORA DE REGISTRO -->
                             <div class="row clearfix">
                                 <div class="col-sm-6">
                                     <div class="form-group form-float">
                                         <div id="inp1" class="form-line" >
                                             <label class="form-label" style=" top: -10px; font-size: 12px;">Fecha de registro</label>
-                                            <input type="text" class="form-control" readonly value="26-03-2018" disabled>
+                                            <input type="date" class="form-control" name="fecha" readonly value="{{ fecha }}" disabled>
 
                                         </div>
                                     </div>
@@ -76,7 +76,7 @@
                                     <div class="form-group form-float">
                                         <div id="inp2" class="form-line" >
                                             <label class="form-label" style=" top: -10px; font-size: 12px;">Hora de registro</label>
-                                            <input type="text" class="form-control" readonly value="11:40" disabled>
+                                            <input type="time" class="form-control" name="hora" readonly value="{{ hora }}" disabled>
 
                                         </div>
                                     </div>
@@ -87,19 +87,40 @@
                             <div class="row clearfix">
                                 <div class="col-sm-6">
                                     <div class="form-group form-float">
-                                        <div class="form-line">
-                                            <input type="text" class="form-control">
-                                            <label class="form-label">Número de Ticket</label>
-                                        </div>
+                                        {% if error.has('ticket') %}
+
+                                            <div class="form-line focused error">
+                                                <input type="number" name="idTicket" class="form-control" value="{{ requestflash.get(0) }}">
+                                                <label class="form-label">Número de Ticket</label>
+                                            </div>
+                                            <label class="error">{{ error.get('ticket') }}</label>
+
+                                        {% else %}
+                                            <div class="form-line">
+                                                <input type="text" class="form-control" name="idTicket"  value="{{ requestflash.get(0) }}">
+                                                <label class="form-label">Número de Ticket</label>
+                                            </div>
+                                            <div class="help-info">Número sugerido</div>
+                                        {% endif %}
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-group form-float">
-                                        <div class="form-line focused error">
-                                            <input type="text" class="form-control">
+                                        {% if error.has('legajo') %}
+
+                                                <div class="form-line focused error">
+                                                    <input type="number" class="form-control" name="legajo" value="{{ requestflash.get(1) }}">
+                                                    <label class="form-label">Número de Legajo</label>
+                                                </div>
+                                                <label class="error">{{ error.get('legajo') }}</label>
+
+                                        {% else %}
+                                        <div class="form-line">
+                                            <input type="number" name="legajo" class="form-control" {% if error.evaluate() %}  {{ requestflash.get(1) }} {% endif %}>
                                             <label class="form-label">Número de Legajo</label>
                                         </div>
-                                        <div class="help-info">La hora de registro debe estar entre las 0 y las 12</div>
+                                        <div class="help-info">Legajo del Empleado que hizo el reclamo</div>
+                                        {% endif %}
                                     </div>
                                 </div>
 
@@ -108,23 +129,10 @@
                             <div class="row clearfix">
                                 <div class="col-sm-12">
 
-                                            <select class="form-control show-tick" id="clasificacion_ticket">
-                                                <option>Cambio de Configuracion de Sistema Operativo de PC</option>
-                                                <option>Problema en el funcionamiento del Sistema Operativo de PC
-                                                </option>
-                                                <option>Solicitud de instalacion de aplicaciones</option>
-                                                <option>Mal funcionamiento de hardware</option>
-                                                <option>Problema de autenticación en los distintos sistemas</option>
-                                                <option>Problema de acceso a la red local o remota</option>
-                                                <option>Solicitud de usuario de red</option>
-                                                <option>Solicitud de usuario para sistemas informaticos que utiliza la empresa</option>
-                                                <option>Modificacion en los perfiles de usuarios</option>
-                                                <option>Solicitud de cambio de contraseña</option>
-                                                <option>Problema en los sistemas de la empresa</option>
-                                                <option>Problemas con el correo electronico</option>
-                                                <option>Solicitud de nuevos puestos de trabajo</option>
-                                                <option>Solicitud de soporte en el uso de alguna aplicacion o sistema</option>
-                                                <option>Otros</option>
+                                            <select class="form-control show-tick" id="clasificacion_ticket" name="clasificacion">
+                                                {% for clas in clasificaciones %}
+                                                <option value="{{ clas.id }}">{{ clas.nombre }}</option>
+                                                {% endfor %}
                                             </select>
 
 
@@ -136,13 +144,24 @@
                             <div class="row clearfix">
                                 <div class="col-sm-12">
                                     <div class="form-group form-float">
-                                        <div class="form-line">
-                                            <textarea  id="descripcion_ticket" name="description" cols="30" rows="5" class="form-control no-resize" required></textarea>
+                                        {% if error.has('descripcion') %}
 
-                                            <label class="form-label">Descripción del problema</label>
-                                        </div>
-                                        <div class="help-info">Min. 3, Max. 255 caracteres</div>
-                                        <label class="error">No se ha agregado una descripción</label>
+                                            <div class="form-line focused error">
+                                                <textarea  id="descripcion_ticket" name="descripcion" cols="30" rows="5" class="form-control no-resize" required>{{ requestflash.get(2) }}</textarea>
+
+                                                <label class="form-label">Descripción del problema</label>
+                                            </div>
+                                            <label class="error">{{ error.get('descripcion') }}</label>
+
+                                        {% else %}
+                                            <div class="form-line">
+                                                <textarea  id="descripcion_ticket" name="descripcion" cols="30" rows="5" class="form-control no-resize" required>{% if error.evaluate() %}  {{ requestflash.get(2) }} {% endif %}</textarea>
+
+                                                <label class="form-label">Descripción del problema</label>
+                                            </div>
+                                            <div class="help-info">Min. 3, Max. 255 caracteres</div>
+                                        {% endif %}
+
                                     </div>
                                 </div>
 
@@ -251,7 +270,7 @@
             });
         }
         else {
-            location.href="CU01AccionesRqueridas";
+            document.getElementById('formulario').submit();
         }
 
     });
