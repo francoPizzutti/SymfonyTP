@@ -16,10 +16,7 @@ class EstadoTicket
      */
     private $id;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $Id_Estado;
+
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -31,17 +28,6 @@ class EstadoTicket
         return $this->id;
     }
 
-    public function getIdEstado(): ?int
-    {
-        return $this->Id_Estado;
-    }
-
-    public function setIdEstado(int $Id_Estado): self
-    {
-        $this->Id_Estado = $Id_Estado;
-
-        return $this;
-    }
 
     public function getDescripcion(): ?string
     {

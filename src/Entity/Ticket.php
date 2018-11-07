@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -39,35 +40,41 @@ class Ticket
     private $Hora;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Empleado", inversedBy="Tickets")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Empleado", inversedBy="Tickets", cascade={"persist"})
      */
     private $Empleado;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="Tickets")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="Tickets", cascade={"persist"})
      */
     private $User;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\ItemHistoricoEstados", mappedBy="Ticket")
+     * @ORM\OneToMany(targetEntity="App\Entity\ItemHistoricoEstados", mappedBy="Ticket", cascade={"persist"})
      */
     private $HistorialEstados;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\ItemHistoricoClasificacion", mappedBy="Ticket")
+     * @ORM\OneToMany(targetEntity="App\Entity\ItemHistoricoClasificacion", mappedBy="Ticket", cascade={"persist"})
      */
     private $HistorialClasificaciones;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Intervencion", mappedBy="Ticket")
+     * @ORM\OneToMany(targetEntity="App\Entity\Intervencion", mappedBy="Ticket", cascade={"persist"})
      */
     private $Intervenciones;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Intervencion", mappedBy="Ticket", cascade={"persist"})
+     */
+
 
     public function __construct()
     {
         $this->HistorialEstados = new ArrayCollection();
         $this->HistorialClasificaciones = new ArrayCollection();
         $this->Intervenciones = new ArrayCollection();
+
     }
 
     public function getId(): ?int
@@ -239,4 +246,15 @@ class Ticket
 
         return $this;
     }
+
+    public function inicializar($desc, $nroTicket, Empleado $empleado, User $user)
+    {
+        $this->Descripcion = $desc;
+        $this->Nro_Ticket = $nroTicket;
+        $this->Empleado = $empleado;
+        $this->User = $user;
+        $this->Fecha = new DateTime();
+        $this->Hora = null;
+    }
+
 }

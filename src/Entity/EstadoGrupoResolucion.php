@@ -16,10 +16,7 @@ class EstadoGrupoResolucion
      */
     private $id;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $Id_Estado_Grupo;
+
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -31,17 +28,7 @@ class EstadoGrupoResolucion
         return $this->id;
     }
 
-    public function getIdEstadoGrupo(): ?int
-    {
-        return $this->Id_Estado_Grupo;
-    }
 
-    public function setIdEstadoGrupo(int $Id_Estado_Grupo): self
-    {
-        $this->Id_Estado_Grupo = $Id_Estado_Grupo;
-
-        return $this;
-    }
 
     public function getDescripcion(): ?string
     {

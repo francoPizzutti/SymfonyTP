@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -16,10 +17,7 @@ class ItemHistoricoIntervencion
      */
     private $id;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $Id_Item;
+
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
@@ -51,22 +49,17 @@ class ItemHistoricoIntervencion
      */
     private $User;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Intervencion", inversedBy="HistorialIntervencion")
+     */
+    private $intervencion;
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getIdItem(): ?int
-    {
-        return $this->Id_Item;
-    }
 
-    public function setIdItem(?int $Id_Item): self
-    {
-        $this->Id_Item = $Id_Item;
-
-        return $this;
-    }
 
     public function getFechaDesde(): ?\DateTimeInterface
     {
@@ -136,6 +129,23 @@ class ItemHistoricoIntervencion
     public function setUser(?User $User): self
     {
         $this->User = $User;
+
+        return $this;
+    }
+    public function __construct()
+    {
+        $this->Fecha_Desde=new DateTime();
+        $this->Hora_Desde=null;
+    }
+
+    public function getIntervencion(): ?Intervencion
+    {
+        return $this->intervencion;
+    }
+
+    public function setIntervencion(?Intervencion $intervencion): self
+    {
+        $this->intervencion = $intervencion;
 
         return $this;
     }

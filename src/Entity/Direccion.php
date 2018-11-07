@@ -16,10 +16,6 @@ class Direccion
      */
     private $id;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $Id_Direccion;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)

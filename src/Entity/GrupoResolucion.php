@@ -18,10 +18,7 @@ class GrupoResolucion
      */
     private $id;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $Codigo;
+
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -54,17 +51,7 @@ class GrupoResolucion
         return $this->id;
     }
 
-    public function getCodigo(): ?int
-    {
-        return $this->Codigo;
-    }
 
-    public function setCodigo(int $Codigo): self
-    {
-        $this->Codigo = $Codigo;
-
-        return $this;
-    }
 
     public function getNombre(): ?string
     {

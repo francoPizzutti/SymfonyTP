@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -16,10 +17,6 @@ class ItemHistoricoClasificacion
      */
     private $id;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $Id_Item;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
@@ -66,17 +63,6 @@ class ItemHistoricoClasificacion
         return $this->id;
     }
 
-    public function getIdItem(): ?int
-    {
-        return $this->Id_Item;
-    }
-
-    public function setIdItem(int $Id_Item): self
-    {
-        $this->Id_Item = $Id_Item;
-
-        return $this;
-    }
 
     public function getFechaDesde(): ?\DateTimeInterface
     {
@@ -172,5 +158,10 @@ class ItemHistoricoClasificacion
         $this->Ticket = $Ticket;
 
         return $this;
+    }
+    public function __construct()
+    {
+        $this->Fecha_Desde= new DateTime();
+        $this->Hora_Desde=null;
     }
 }
