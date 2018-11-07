@@ -16,10 +16,7 @@ class EstadoClasificacionTicket
      */
     private $id;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $Id_Estado_Cla;
+
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -31,17 +28,6 @@ class EstadoClasificacionTicket
         return $this->id;
     }
 
-    public function getIdEstadoCla(): ?int
-    {
-        return $this->Id_Estado_Cla;
-    }
-
-    public function setIdEstadoCla(int $Id_Estado_Cla): self
-    {
-        $this->Id_Estado_Cla = $Id_Estado_Cla;
-
-        return $this;
-    }
 
     public function getDescripcion(): ?string
     {
