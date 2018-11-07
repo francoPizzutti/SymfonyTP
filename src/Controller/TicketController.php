@@ -53,7 +53,11 @@ class TicketController extends AbstractController
             $load = '';
             $fecha = date("Y-m-d");
             $hora = date("h:i:s");
-            $requestflash->set(12312);
+            $last = $this->getDoctrine()
+                ->getRepository(Ticket::class)
+                ->lastT();
+
+            $requestflash->set($last[0]->getId()+1);
 
             $repository = $this->getDoctrine()->getRepository(ClasificacionTicket::class);
             $clasificacionesDTO = $repository->findBy(

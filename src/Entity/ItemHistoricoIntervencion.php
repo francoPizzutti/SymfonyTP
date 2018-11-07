@@ -29,15 +29,6 @@ class ItemHistoricoIntervencion
      */
     private $Fecha_Hasta;
 
-    /**
-     * @ORM\Column(type="time", nullable=true)
-     */
-    private $Hora_Desde;
-
-    /**
-     * @ORM\Column(type="time", nullable=true)
-     */
-    private $Hora_Hasta;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\EstadoIntervencion")
@@ -85,30 +76,6 @@ class ItemHistoricoIntervencion
         return $this;
     }
 
-    public function getHoraDesde(): ?\DateTimeInterface
-    {
-        return $this->Hora_Desde;
-    }
-
-    public function setHoraDesde(?\DateTimeInterface $Hora_Desde): self
-    {
-        $this->Hora_Desde = $Hora_Desde;
-
-        return $this;
-    }
-
-    public function getHoraHasta(): ?\DateTimeInterface
-    {
-        return $this->Hora_Hasta;
-    }
-
-    public function setHoraHasta(?\DateTimeInterface $Hora_Hasta): self
-    {
-        $this->Hora_Hasta = $Hora_Hasta;
-
-        return $this;
-    }
-
     public function getEstadoIntervencion(): ?EstadoIntervencion
     {
         return $this->Estado_Intervencion;
@@ -135,7 +102,6 @@ class ItemHistoricoIntervencion
     public function __construct()
     {
         $this->Fecha_Desde=new DateTime();
-        $this->Hora_Desde=null;
     }
 
     public function getIntervencion(): ?Intervencion

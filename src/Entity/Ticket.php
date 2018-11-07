@@ -35,11 +35,6 @@ class Ticket
     private $Fecha;
 
     /**
-     * @ORM\Column(type="time", nullable=true)
-     */
-    private $Hora;
-
-    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Empleado", inversedBy="Tickets", cascade={"persist"})
      */
     private $Empleado;
@@ -118,17 +113,6 @@ class Ticket
         return $this;
     }
 
-    public function getHora(): ?\DateTimeInterface
-    {
-        return $this->Hora;
-    }
-
-    public function setHora(?\DateTimeInterface $Hora): self
-    {
-        $this->Hora = $Hora;
-
-        return $this;
-    }
 
     public function getEmpleado(): ?Empleado
     {
@@ -254,7 +238,6 @@ class Ticket
         $this->Empleado = $empleado;
         $this->User = $user;
         $this->Fecha = new DateTime();
-        $this->Hora = null;
     }
 
 }

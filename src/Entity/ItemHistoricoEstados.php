@@ -28,15 +28,6 @@ class ItemHistoricoEstados
      */
     private $Fecha_Hasta;
 
-    /**
-     * @ORM\Column(type="time", nullable=true)
-     */
-    private $Hora_Desde;
-
-    /**
-     * @ORM\Column(type="time", nullable=true)
-     */
-    private $Hora_Hasta;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -89,29 +80,6 @@ class ItemHistoricoEstados
         return $this;
     }
 
-    public function getHoraDesde(): ?\DateTimeInterface
-    {
-        return $this->Hora_Desde;
-    }
-
-    public function setHoraDesde(?\DateTimeInterface $Hora_Desde): self
-    {
-        $this->Hora_Desde = $Hora_Desde;
-
-        return $this;
-    }
-
-    public function getHoraHasta(): ?\DateTimeInterface
-    {
-        return $this->Hora_Hasta;
-    }
-
-    public function setHoraHasta(?\DateTimeInterface $Hora_Hasta): self
-    {
-        $this->Hora_Hasta = $Hora_Hasta;
-
-        return $this;
-    }
 
     public function getObservacion(): ?string
     {
@@ -164,6 +132,6 @@ class ItemHistoricoEstados
     public function __construct()
     {
         $this->Fecha_Desde=new DateTime();
-        $this->Hora_Desde=null;
+
     }
 }
