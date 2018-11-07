@@ -47,4 +47,18 @@ class TicketRepository extends ServiceEntityRepository
         ;
     }
     */
+    public function lastT(): array
+    {
+        $entityManager = $this->getEntityManager();
+
+        $qb = $this->createQueryBuilder('p')
+            ->orderBy('p.id', 'DESC')
+            ->getQuery()
+            ->setMaxResults(1);
+
+        return $qb->execute();
+
+        // to get just one result:
+        // $product = $qb->setMaxResults(1)->getOneOrNullResult();
+    }
 }
