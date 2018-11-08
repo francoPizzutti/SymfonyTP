@@ -57,7 +57,11 @@ class TicketController extends AbstractController
                 ->getRepository(Ticket::class)
                 ->lastT();
 
-            $requestflash->set($last[0]->getId()+1);
+            if($last != null) {
+
+                $requestflash->set($last[0]->getNroTicket() + 1);
+            }
+            else  $requestflash->set(1);
 
             $repository = $this->getDoctrine()->getRepository(ClasificacionTicket::class);
             $clasificacionesDTO = $repository->findBy(
@@ -82,7 +86,7 @@ class TicketController extends AbstractController
     }
 
 public function ProcesarRegistrarTicket(Request $request, error $error, requestflash $requestflash){
-    $load = '';
+
 
     if ($this->getUser()!= null && $this->getUser()->getNivel()==0) {
         /* recuperamos los datos enviados en el formulario*/
@@ -125,11 +129,12 @@ public function ProcesarRegistrarTicket(Request $request, error $error, requestf
 
            $repository = $this->getDoctrine()->getRepository(ClasificacionTicket::class);
            $clasificacionesDTO = $repository->findAll();
+           $load="";
 
 
 
            return $this->render('MesaDeAyuda/CU01registrarticket.html.twig', [
-               'titulo' => 'flassheando mensaje',
+               'titulo' => 'Error en el registro',
                'load' => $load,
                'error'=> $error,
                'fecha' => $fecha,
@@ -208,8 +213,14 @@ public function ProcesarRegistrarTicket(Request $request, error $error, requestf
 
            /* #END# INTERVENCION*/
 
+           $load = 'successNotify("El Ticket fue creado con éxito  con el Nro: '.$NTicket.', Nro de Legajo: '.$Nlegajo.'")';
+           $requestflash->set($NTicket);
 
-           return $this->redirectToRoute('CU01registrarTicket2');
+
+           return $this->render('MesaDeAyuda/CU01registrarticket2.html.twig', ['load' => $load,
+               'titulo' => 'Acciones Requeridas',
+               'error' =>$error,
+               'requestflash' => $requestflash]);
        }
 
 
@@ -219,19 +230,30 @@ public function ProcesarRegistrarTicket(Request $request, error $error, requestf
 /* END REGISTRO DE TICKET*/
 
 
-    public function AccionesRqueridas(){
-        if ($this->getUser()!= null) {
-            $titulo = 'Acciones Rqueridas';
-            $load = '';
-            return $this->render('MesaDeAyuda/CU01registrarticket2.html.twig', [
-                'titulo' => $titulo,
-                'load' => $load,
-            ]);
+    public function CU01CerrarMesa(Request $request, requestflash $requestflash, error $error){
 
+        if ($this->getUser()!= null && $this->getUser()->getNivel()==0) {
+            /* recuperamos los datos enviados en el formulario*/
+            $NTicket = $request->request->get('idTicket');
+            $Nobservacion = $request->request->get('observacion');
+
+            /* #END# datos del formulario */
+            if (!$this->ValidaDescripcion($Nobservacion) || !$this->ValidaTicket($NTicket)) {
+                if($this->ValidaDescripcion($Nobservacion)==false){
+                    $error->set('observacion', 'Las observaciones no cumplen con los requerimientos min 3 caracteres, max 255');
+                    $requestflash->set($Nobservacion);
+                }
+                if($this->ValidaTicket($NTicket)==false){
+                    $error->set('ticket', 'El ticket es inexistente');
+                    $requestflash->set($NTicket);
+                }
+
+            }
         }
         else return $this->redirectToRoute('index');
 
-    }
+
+        }
 
     public function ConsultarTicket(){
         if ($this->getUser()!= null) {
@@ -359,6 +381,22 @@ public function ProcesarRegistrarTicket(Request $request, error $error, requestf
             return false;
         }
     }
+
+        public function ValidaTicket($nro)
+        {
+            if(is_numeric($nro)){
+                $repository = $this->getDoctrine()->getRepository(Ticket::class);
+                $ticket = $repository->findOneBy(['Nro_Ticket'=> $nro]);
+                if($ticket!=null){
+                    return true;
+                }
+                else return false;
+
+            }
+            else{
+                return false;
+            }
+        }
 
 
 }
