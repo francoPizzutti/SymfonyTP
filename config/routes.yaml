@@ -39,9 +39,9 @@ CU01ProcesarTicket:
               controller: App\Controller\TicketController::ProcesarRegistrarTicket
               methods: [POST]
 
-CU01registrarTicket2:
+CU01CerrarMesa:
               path:     /CU01AccionesRqueridas
-              controller: App\Controller\TicketController::AccionesRqueridas
+              controller: App\Controller\TicketController::CU01CerrarMesa
 
 CU02ConsultarTicket:
               path:     /CU02ConsultarTicket

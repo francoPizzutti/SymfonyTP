@@ -1,6 +1,6 @@
 
 function successNotify(mensaje){
-    $('#modal-options').iziModal('close');
+
     $.notify({
         title: '  ',
         icon: 'glyphicon glyphicon-ok',
