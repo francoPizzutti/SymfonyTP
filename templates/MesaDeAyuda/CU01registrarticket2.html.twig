@@ -6,6 +6,9 @@
     <!-- Bootstrap Select Css -->
     <link href="{{ asset('plugins/bootstrap-select/css/bootstrap-select.css') }}" rel="stylesheet" />
 
+    <!-- Izimodal Css -->
+    <link href="{{ asset('css/iziModal.min.css') }}" rel="stylesheet" type="text/css">
+
     <!-- Notify Css -->
     <link href="{{ asset('css/notify.css') }}" rel="stylesheet" type="text/css">
 
@@ -118,7 +121,7 @@
                                 <div class="row clearfix">
                                     <div class="col-sm-12">
                                         <div class="form-group">
-                                    <button type="button" id="cerrar" class="btn bg-cyan m-t-15 waves-effect">CERRAR</button>
+                                    <button type="button" id="cerrar" class="btn bg-cyan m-t-15 waves-effect open-options">CERRAR</button>
                                         </div>
                                     </div>
                                 </div>
@@ -180,6 +183,30 @@
 
 
 
+        <!-- CON OPCIONES-->
+        <div id="modal-options" class="iziModal" data-izimodal-group="group1" data-izimodal-loop="" data-izimodal-title="¿ESTA SEGURO DE CERRAR EL TICKET?" data-izimodal-subtitle="Cerrar solo si ha confirmado que esta resuelto el problema">
+
+            <!-- Basic Card -->
+            <div class="row clearfix">
+
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+
+
+                    <div class="body align-right" style="padding: 20px">
+
+                        <div class="button-demo">
+                            <button type="button" class="btn bg-grey waves-effect" onclick="cerrarIzimodal()">CANCELAR</button>
+                            <button type="button" class="btn bg-red waves-effect" onclick="submit()">ACEPTAR</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- #END# Basic Card -->
+
+
+
 
     </div>
 </section>
@@ -197,6 +224,9 @@
 
 <!-- Slimscroll Plugin Js -->
 <script src="{{ asset('plugins/jquery-slimscroll/jquery.slimscroll.js') }}"></script>
+
+    <!-- Izimodal -->
+    <script src="{{ asset('plugins/izimodal/iziModal.min.js') }}"></script>
 
 <!-- Bootstrap Notify Plugin Js -->
 <script src="{{ asset('plugins/bootstrap-notify/bootstrap-notify.js') }}"></script>
@@ -239,10 +269,27 @@
             });
         }
         else {
-            document.getElementById('formulario').submit();
+
+
+            $('#modal-options').iziModal({
+                headerColor: '#F44336',
+                width: '50%', //横幅
+                overlayColor: 'rgba(0, 0, 0, 0.5)', //モーダルの背景色
+                fullscreen: true, //全画面表示
+                transitionIn: 'fadeInUp', //表示される時のアニメーション
+                transitionOut: 'fadeOutDown' //非表示になる時のアニメーション
+            });
+            $('#modal-options').iziModal('open');
+
         }
 
+
+
     });
+    function cerrarIzimodal(){
+        $('#modal-options').iziModal('close');
+    }
+
 
 
 </script>
@@ -253,6 +300,10 @@
             document.getElementById("derivar").setAttribute('disabled', 'disable');
             document.getElementById('observacionT').readOnly = true;
             successNotify(string);
+
+        }
+        function submit() {
+            document.getElementById('formulario').submit();
 
         }
     </script>
