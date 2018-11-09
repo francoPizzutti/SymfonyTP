@@ -161,7 +161,7 @@
                                 <div class="row clearfix">
                                     <div class="col-sm-12">
                                         <div class="form-group">
-                                        <button type="button" class="btn bg-cyan m-t-15 waves-effect">DERIVAR</button>
+                                        <button type="button" id="derivar" class="btn bg-cyan m-t-15 waves-effect">DERIVAR</button>
                                     </div>
                                     </div>
                                 </div>
@@ -246,5 +246,15 @@
 
 
 </script>
+
+    <script>
+        function success(string) {
+            document.getElementById("cerrar").setAttribute('disabled', 'disable');
+            document.getElementById("derivar").setAttribute('disabled', 'disable');
+            document.getElementById('observacionT').readOnly = true;
+            successNotify(string);
+
+        }
+    </script>
 
 {% endblock %}

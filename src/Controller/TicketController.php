@@ -47,28 +47,38 @@ class TicketController extends AbstractController
 
     /* FUNCIONES PARA EL REGISTRO DE TICKET */
 
+    public function getLastTicket(){
+        $last = $this->getDoctrine()
+            ->getRepository(Ticket::class)
+            ->lastT();
+
+        if($last != null) {
+
+            return $last[0]->getNroTicket();
+        }
+        else  return 0;
+
+    }
+    public function clasificacionesOrdenadas(){
+        $repository = $this->getDoctrine()->getRepository(ClasificacionTicket::class);
+        $clasificaciones = $repository->findBy(
+            [],
+            ['Nombre' => 'ASC']
+        );
+        return $clasificaciones;
+
+    }
+
+
     public function RegistrarTicket(error $error, requestflash $requestflash){
         if ($this->getUser()!= null && $this->getUser()->getNivel()==0) {
             $titulo = 'Registrar Nuevo Ticket';
             $load = '';
             $fecha = date("Y-m-d");
             $hora = date("h:i:s");
-            $last = $this->getDoctrine()
-                ->getRepository(Ticket::class)
-                ->lastT();
 
-            if($last != null) {
-
-                $requestflash->set($last[0]->getNroTicket() + 1);
-            }
-            else  $requestflash->set(1);
-
-            $repository = $this->getDoctrine()->getRepository(ClasificacionTicket::class);
-            $clasificacionesDTO = $repository->findBy(
-                [],
-                ['Nombre' => 'ASC']
-            );
-
+            $requestflash->set($this->getLastTicket()+1);
+            $clasificacionesDTO = $this->clasificacionesOrdenadas();
 
             return $this->render('MesaDeAyuda/CU01registrarticket.html.twig', [
                 'titulo' => $titulo,
@@ -127,8 +137,8 @@ public function ProcesarRegistrarTicket(Request $request, error $error, requestf
            $requestflash->set($Ndescripcion);
            /* #END# requestFlash */
 
-           $repository = $this->getDoctrine()->getRepository(ClasificacionTicket::class);
-           $clasificacionesDTO = $repository->findAll();
+
+           $clasificacionesDTO = $this->clasificacionesOrdenadas();
            $load="";
 
 
@@ -238,15 +248,56 @@ public function ProcesarRegistrarTicket(Request $request, error $error, requestf
             $Nobservacion = $request->request->get('observacion');
 
             /* #END# datos del formulario */
+
+            /* EN CASO DE QUE LOS PARAMETROS NO CUMPLAN CON LOS REQUERIMIENTOS RETORNA LA VISTA CON ERROR */
             if (!$this->ValidaDescripcion($Nobservacion) || !$this->ValidaTicket($NTicket)) {
+
                 if($this->ValidaDescripcion($Nobservacion)==false){
                     $error->set('observacion', 'Las observaciones no cumplen con los requerimientos min 3 caracteres, max 255');
-                    $requestflash->set($Nobservacion);
+
                 }
                 if($this->ValidaTicket($NTicket)==false){
                     $error->set('ticket', 'El ticket es inexistente');
-                    $requestflash->set($NTicket);
+
                 }
+                $requestflash->set($NTicket);
+                $requestflash->set($Nobservacion);
+                $load = 'errorNotify("El Ticket con el Nro: '.$NTicket.', no pudo ser cerrado")';
+                return $this->render('MesaDeAyuda/CU01registrarticket2.html.twig', ['load' => $load,
+                    'titulo' => 'Error Acciones Requeridas',
+                    'error' =>$error,
+                    'requestflash' => $requestflash]);
+
+            }
+            else{
+                $entityManager = $this->getDoctrine()->getManager();
+                /* BUSCAMOS EL TICKET  QUE SERA CERRADO*/
+                $repository = $this->getDoctrine()->getRepository(Ticket::class);
+                $ticket = $repository->findOneBy(['Nro_Ticket'=> $NTicket]);
+                /* #END* buscar */
+
+                /* BUSCAMOS AHORA EL USUARIO */
+                $usuario = $this->getUser();
+                /* #END# buscar usuario*/
+
+                $this->cerrarIntervencionMesa($ticket, $Nobservacion, $usuario);
+                $this->cerrarHistorialesTicket($ticket, $usuario);
+
+                $entityManager->persist($ticket);
+
+                $entityManager->flush();
+
+                $load = 'success("El Ticket fue cerrado correctamente")';
+                $requestflash->set($NTicket);
+                $requestflash->set($Nobservacion);
+
+
+                return $this->render('MesaDeAyuda/CU01registrarticket2.html.twig', ['load' => $load,
+                    'titulo' => 'Ticket Cerrado',
+
+                    'error' =>$error,
+
+                    'requestflash' => $requestflash]);
 
             }
         }
@@ -397,6 +448,58 @@ public function ProcesarRegistrarTicket(Request $request, error $error, requestf
                 return false;
             }
         }
+
+
+    public function cerrarIntervencionMesa( Ticket $ticket, $obs, $user){
+        /* Buscamos la intervencion de la mesa de ayuda*/
+        $interMesa = $ticket->getIntervenciones()->first();
+
+        /* seteamos las observaciones*/
+        $interMesa->setObservaciones($obs);
+
+        /* buscamos el item historico de la intervencion y lo cerramos*/
+        $historialMesa = $interMesa->getHistorialIntervencion()->first();
+        $historialMesa->cerrar();
+
+        /* buscamos el estado cerrado de la intervencion desde la base de datos*/
+        $repository = $this->getDoctrine()->getRepository(EstadoIntervencion::class);
+        $EstadoIntervencion = $repository->find(5);
+
+        /* creamos el nuevo item historico de intervencion y le seteamos el usuario y el nuevo estado cerrado*/
+        $historialNuevo = new ItemHistoricoIntervencion();
+        $historialNuevo->setUser($user);
+        $historialNuevo->setEstadoIntervencion($EstadoIntervencion);
+        $historialNuevo->cerrar();
+
+        /* agregamos el nuevo item historico a la intervencion, y por ende al ticket*/
+        $interMesa->addHistorialIntervencion($historialNuevo);
+
+    }
+
+    public function cerrarHistorialesTicket( Ticket $ticket, $user){
+        /* Buscamos el ultimo historial de estados y lo cerramos*/
+        $historialEstados = $ticket->getHistorialEstados()->last();
+        $historialEstados->cerrar();
+
+        /* buscamos el nuevo estado cerrado para el nuevo historial de estados*/
+        $repository = $this->getDoctrine()->getRepository(EstadoTicket::class);
+        $estadoTicket = $repository->find(4);
+
+        /* creamos el nuevo historial de estados y le seteamos el usuario y el nuevo estado cerrado del ticket*/
+        $historialNuevo = new ItemHistoricoEstados();
+        $historialNuevo->setUser($user);
+        $historialNuevo->setEstadoTicket($estadoTicket);
+        $historialNuevo->cerrar();
+
+        /* agregamos el nuevo historial al ticket*/
+        $ticket->addHistorialEstado($historialNuevo);
+
+        /* cerramos el historial de reclasificacion*/
+        $historialclasificacion = $ticket->getHistorialClasificaciones()->last();
+        $historialclasificacion->cerrar();
+
+
+    }
 
 
 }

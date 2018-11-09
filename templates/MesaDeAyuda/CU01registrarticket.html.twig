@@ -6,7 +6,11 @@
     <!-- Bootstrap Select Css -->
     <link href="{{ asset('plugins/bootstrap-select/css/bootstrap-select.css') }}" rel="stylesheet" />
 
+    <!-- Izimodal Css -->
+    <link href="{{ asset('css/iziModal.min.css') }}" rel="stylesheet" type="text/css">
 
+    <!-- Notify Css -->
+    <link href="{{ asset('css/notify.css') }}" rel="stylesheet" type="text/css">
 
     <style>
         .alert-black{
@@ -202,7 +206,27 @@
 
 
 
+ <!-- CON OPCIONES-->
+                            <div id="modal-options" class="iziModal" data-izimodal-group="group1" data-izimodal-loop="" data-izimodal-title="¿ESTA SEGURO DE CREAR EL TICKET?" data-izimodal-subtitle="crear si ha completado todos los campos">
 
+                                <!-- Basic Card -->
+                                <div class="row clearfix">
+
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+
+
+                                        <div class="body align-right" style="padding: 20px">
+
+                                            <div class="button-demo">
+                                                <button type="button" class="btn bg-grey waves-effect" onclick="cerrarIzimodal()">CANCELAR</button>
+                                                <button type="button" class="btn bg-red waves-effect" onclick="submit()">ACEPTAR</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                                <!-- #END# Basic Card -->
 
 
 
@@ -233,46 +257,53 @@
 
 <script src="{{ asset('js/pages/forms/form-validation.js') }}"></script>
 
+<!-- Izimodal -->
+<script src="{{ asset('plugins/izimodal/iziModal.min.js') }}"></script>
+
+
+<!-- Bootstrap Notify Plugin Js -->
+<script src="{{ asset('plugins/bootstrap-notify/bootstrap-notify.js') }}"></script>
+<script src="{{ asset('js/notify.js') }}"></script>
+
 
 
 <script>
-    //options
-    $(document).on('click', '#submm', function(event) {
-        event.preventDefault();
-        var textA = document.getElementById('descripcion_ticket');
-        if(textA.value == "") {
-            /*
-             $('#modal-alert').iziModal({
-             headerColor: '#d43838',
-             timeout: 10000,
-             timeoutProgressbar: true,
-             pauseOnHover: true
-             });
-             $('#modal-alert').iziModal('open');
-             */
-            $.notify({
-                title: '  ',
+   function submit() {
 
-                message: 'El campo descripción del problema esta vacío'
-            },{
-                type: 'black',
-                animate: {
-                    enter: 'animated fadeInDown',
-                    exit: 'animated fadeOutDown'
-                },
-                placement: {
-                    from: "top",
-                    align: "left"
-                },
-                offset: 20,
-                spacing: 10,
-                z_index: 1031,
-            });
-        }
-        else {
+
             document.getElementById('formulario').submit();
         }
 
-    });
+
+    </script>
+
+    <script>
+        //options
+        $(document).on('click', '.open-options', function(event) {
+            event.preventDefault();
+            var textA = document.getElementById('descripcion_ticket');
+            if(textA.value == "") {
+
+                infoNotify('El campo descripción del problema esta vacío');
+            }
+            else {
+
+                $('#modal-options').iziModal({
+                    headerColor: '#F44336',
+                    width: '50%', //横幅
+                    overlayColor: 'rgba(0, 0, 0, 0.5)', //モーダルの背景色
+                    fullscreen: true, //全画面表示
+                    transitionIn: 'fadeInUp', //表示される時のアニメーション
+                    transitionOut: 'fadeOutDown' //非表示になる時のアニメーション
+                });
+                $('#modal-options').iziModal('open');
+
+            }
+        });
+
+        function cerrarIzimodal(){
+            $('#modal-options').iziModal('close');
+        }
+
     </script>
 {% endblock %}
