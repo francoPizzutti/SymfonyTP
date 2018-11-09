@@ -50,7 +50,6 @@ function infoNotify(mensaje) {
 }
 
 function errorNotify(mensaje) {
-    $('#modal-options').iziModal('close');
 
     $.notify({
         title: '  ',

@@ -133,4 +133,8 @@ class ItemHistoricoClasificacion
         $this->Fecha_Desde= new DateTime();
 
     }
+    public function cerrar(){
+        $this->Fecha_Hasta= new DateTime();
+
+    }
 }

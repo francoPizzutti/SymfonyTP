@@ -240,4 +240,6 @@ class Ticket
         $this->Fecha = new DateTime();
     }
 
+
+
 }

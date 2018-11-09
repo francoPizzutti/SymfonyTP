@@ -115,4 +115,8 @@ class ItemHistoricoIntervencion
 
         return $this;
     }
+
+    public function cerrar(){
+        $this->Fecha_Hasta=new DateTime();
+    }
 }
