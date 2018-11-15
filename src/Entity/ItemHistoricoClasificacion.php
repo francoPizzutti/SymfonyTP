@@ -48,7 +48,8 @@ class ItemHistoricoClasificacion
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Ticket", inversedBy="HistorialClasificaciones")
      */
-    private $Ticket;
+    private $ticket;
+
 
     public function getId(): ?int
     {
@@ -117,17 +118,7 @@ class ItemHistoricoClasificacion
         return $this;
     }
 
-    public function getTicket(): ?Ticket
-    {
-        return $this->Ticket;
-    }
 
-    public function setTicket(?Ticket $Ticket): self
-    {
-        $this->Ticket = $Ticket;
-
-        return $this;
-    }
     public function __construct()
     {
         $this->Fecha_Desde= new DateTime();
@@ -136,5 +127,17 @@ class ItemHistoricoClasificacion
     public function cerrar(){
         $this->Fecha_Hasta= new DateTime();
 
+    }
+
+    public function getTicket(): ?Ticket
+    {
+        return $this->ticket;
+    }
+
+    public function setTicket(?Ticket $ticket): self
+    {
+        $this->ticket = $ticket;
+
+        return $this;
     }
 }

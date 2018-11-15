@@ -12,10 +12,14 @@ use App\Entity\ItemHistoricoClasificacion;
 use App\Entity\ItemHistoricoEstados;
 use App\Entity\ItemHistoricoIntervencion;
 use App\Entity\Ticket;
+use App\Service\clasificacionesDTO;
+use App\Service\estadosDTO;
+use App\Service\gruposDTO;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use App\Service\error;
 use App\Service\requestflash;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -45,7 +49,7 @@ class TicketController extends AbstractController
 
     }
 
-    /* FUNCIONES PARA EL REGISTRO DE TICKET */
+    /* PERMITE ENCONTRAR EL ULTIMO TICKET, SIRVE PARA CREAR UN NUEVO TICKET */
 
     public function getLastTicket(){
         $last = $this->getDoctrine()
@@ -59,18 +63,10 @@ class TicketController extends AbstractController
         else  return 0;
 
     }
-    public function clasificacionesOrdenadas(){
-        $repository = $this->getDoctrine()->getRepository(ClasificacionTicket::class);
-        $clasificaciones = $repository->findBy(
-            [],
-            ['Nombre' => 'ASC']
-        );
-        return $clasificaciones;
-
-    }
 
 
-    public function RegistrarTicket(error $error, requestflash $requestflash){
+/* PRESENTA LA VISTA CON EL FORMULARIO PARA EL REGISTRO DE UN NUEVO TICKET*/
+    public function VistaRegistrar(error $error, requestflash $requestflash){
         if ($this->getUser()!= null && $this->getUser()->getNivel()==0) {
             $titulo = 'Registrar Nuevo Ticket';
             $load = '';
@@ -95,7 +91,9 @@ class TicketController extends AbstractController
 
     }
 
-public function ProcesarRegistrarTicket(Request $request, error $error, requestflash $requestflash){
+
+    /* PROCESA EL FORMULARIO DE REGISTRO DE REGISTRACION DE TICKET*/
+public function Registrar(Request $request, error $error, requestflash $requestflash){
 
 
     if ($this->getUser()!= null && $this->getUser()->getNivel()==0) {
@@ -306,19 +304,133 @@ public function ProcesarRegistrarTicket(Request $request, error $error, requestf
 
         }
 
-    public function ConsultarTicket(){
+
+    /* PRESENTA LA VISTA CON EL FORMULARIO PARA CONSULTAR TICKET*/
+    public function VistaConsultar(){
         if ($this->getUser()!= null) {
             $titulo = 'Consultar Ticket';
             $load = '';
+            $clasificaciones = $this->clasificacionesOrdenadas();
+            $claDTO = new clasificacionesDTO();
+            $claDTO->setId(0);
+            $claDTO->setNombre('Todas las clasificaciones');
+            array_unshift($clasificaciones, $claDTO);
+            $grupos = $this->gruposOrdenados();
+            $gruDTO = new gruposDTO();
+            $gruDTO->setId(0);
+            $gruDTO->setNombre('Todos los grupos de resolución');
+            array_unshift($grupos, $gruDTO);
+            $estados = $this->estadosOrdenados();
+            $estDTO = new estadosDTO();
+            $estDTO->setId(0);
+            $estDTO->setDescripcion('Todos los estados');
+            array_unshift($estados, $estDTO);
             return $this->render('MesaDeAyuda/CU02ConsultarTicket.html.twig', [
                 'titulo' => $titulo,
                 'load' => $load,
+                'grupos' => $grupos,
+                'estados' => $estados,
+                'clasificaciones' => $clasificaciones
             ]);
 
         }
         else return $this->redirectToRoute('index');
 
     }
+
+    /* PROCESA EL FORMULARIO DE CONSULTA DE TICKET*/
+    public function Consultar(Request $request){
+
+
+        if ($this->getUser()!= null && $this->getUser()->getNivel()==0) {
+            /* recuperamos los datos enviados en el formulario*/
+            $Nticket = $request->request->get('idTicket');
+            $Nlegajo = $request->request->get('legajo');
+            $Nclasificacion = $request->request->get('clasificacion');
+            $Nestado = $request->request->get('estado');
+            $Ngrupo = $request->request->get('grupoRes');
+            $NfechaC = $request->request->get('fechaCreacion');
+            $NfechaU = $request->request->get('fechaCambio');
+            $Ne = null;
+            /* #END# datos del formulario */
+
+
+            if($this->ValidaLegajo($Nlegajo)) {
+                /*BUSCAMOS EL EMPLEADO*/
+                $repository = $this->getDoctrine()->getRepository(Empleado::class);
+                $empleado = $repository->findBy(['Legajo' => $Nlegajo]);/* #END# EMPLEADO*/;
+                $Ne=$empleado[0]->getId();
+            }
+
+                $result = $this->getDoctrine()
+                    ->getRepository(Ticket::class)
+                    ->consult($Nticket, $Ne, $NfechaC );
+
+                if ($result!=null){
+                    $filtrado = array();
+                    if($Nclasificacion!=0){
+
+                        $repository = $this->getDoctrine()->getRepository(ClasificacionTicket::class);
+                        $clasificacion = $repository->find($Nclasificacion);
+
+                        foreach ($result as $item){
+                            if($item->getLastHistorialClasificacion()->getClasificacion()==$clasificacion){
+                                array_push($filtrado, $item);
+                            }
+                        }
+                        $result = $filtrado;
+                    }
+
+                    $filtrado = array();
+                    if($Nestado!=0){
+
+                        $repository = $this->getDoctrine()->getRepository(EstadoTicket::class);
+                        $estado = $repository->find($Nestado);
+
+                        foreach ($result as $item){
+                            if($item->getLastHistorialEstados()->getEstadoTicket() == $estado){
+                                array_push($filtrado, $item);
+                            }
+                        }
+                        $result = $filtrado;
+                    }
+
+                    $filtrado = array();
+
+                    if($Ngrupo!=0){
+
+                        $repository = $this->getDoctrine()->getRepository(GrupoResolucion::class);
+                        $grupoResolucion = $repository->find($Ngrupo);
+
+                        foreach ($result as $item){
+                            if($this->getGrupoResolucion($item) == $grupoResolucion){
+                                array_push($filtrado, $item);
+                            }
+                        }
+                        $result = $filtrado;
+                    }
+
+                    return $this->render('MesaDeAyuda/CU02ConsultarTicket2.html.twig',['titulo' => 'fsdkfds',
+                        'load' => 'sacar()',
+                        'result' => $result,
+                    ]);
+                }
+                else{
+                    return $this->render('MesaDeAyuda/CU02ConsultarTicket2.html.twig',['titulo' => 'fallo',
+                        'load' => 'sacar()',
+                        'result' => 'nada de nada',
+                    ]);
+                }
+
+
+            }
+
+
+
+
+        }
+
+
 
     public function VerListaTicket(){
         if ($this->getUser()!= null) {
@@ -501,5 +613,86 @@ public function ProcesarRegistrarTicket(Request $request, error $error, requestf
 
     }
 
+    /* TRAE TODAS LAS CLASIFICACION EN FORMA ORDENADAS ALFABETICAMENTE POR NOMBRE */
+
+    public function clasificacionesOrdenadas(){
+        $repository = $this->getDoctrine()->getRepository(ClasificacionTicket::class);
+        $clas = $repository->findBy(
+            [],
+            ['Nombre' => 'ASC']
+        );
+        $clasificaciones = array();
+        foreach ($clas as $item){
+            $claDTO = new clasificacionesDTO();
+            $claDTO->setId($item->getId());
+            $claDTO->setNombre($item->getNombre());
+            array_push($clasificaciones, $claDTO);
+
+        }
+        return $clasificaciones;
+
+    }
+
+    /* TRAE TODOS LOS GRUPOS DE RESOLUCION ORDENADOS ALFABETICAMENTE POR NOMBRE */
+
+    public function gruposOrdenados(){
+        $repository = $this->getDoctrine()->getRepository(GrupoResolucion::class);
+        $gruposO = $repository->findBy(
+            [],
+            ['Nombre' => 'ASC']
+        );
+        $grupos = array();
+        foreach ($gruposO as $item){
+            $grupoDTO = new gruposDTO();
+            $grupoDTO->setId($item->getId());
+            $grupoDTO->setNombre($item->getNombre());
+            array_push($grupos, $grupoDTO);
+
+        }
+        return $grupos;
+
+    }
+
+    /* TRAE TODOS LOS ESTADOS DE TICKET ORDENADOS ALFABETICAMENTE POR DESCRIPCION */
+
+    public function estadosOrdenados(){
+        $repository = $this->getDoctrine()->getRepository(EstadoTicket::class);
+        $estadosO = $repository->findBy(
+            [],
+            ['Descripcion' => 'ASC']
+        );
+        $estados = array();
+        foreach ($estadosO as $item){
+            $estadoDTO = new estadosDTO();
+            $estadoDTO->setId($item->getId());
+            $estadoDTO->setDescripcion($item->getDescripcion());
+            array_push($estados, $estadoDTO);
+
+        }
+        return $estados;
+
+    }
+
+    public function getGrupoResolucion(Ticket $ticket)
+    {
+        $repository = $this->getDoctrine()->getRepository(GrupoResolucion::class);
+        $intv=null;
+        if($ticket->getLastHistorialEstados()->getEstadoTicket()->getId()!= 2 )
+        {
+            $grupo = $repository->find(1);
+            return $grupo;
+
+        }
+        else{
+            foreach ($ticket->getIntervenciones() as $intervencion) {
+                $Itemhist = $intervencion->getHistorialIntervencion()->last();
+                if($Itemhist->getEstadoIntervencion()->getId() == 1 || $Itemhist->getEstadoIntervencion()->getId() == 4){
+                    $intv = $intervencion->getGrupoResolucion();
+                }
+            }
+
+            return $intv;
+        }
+    }
 
 }

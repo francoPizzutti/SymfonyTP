@@ -31,12 +31,12 @@ logout:
 #---------------------------------------------------------------------------------------------------------------------#
 CU01registrarTicket:
               path:     /CU01registrarTicket
-              controller: App\Controller\TicketController::RegistrarTicket
+              controller: App\Controller\TicketController::VistaRegistrar
               methods: [GET]
 
 CU01ProcesarTicket:
               path:     /CU01registrarTicket
-              controller: App\Controller\TicketController::ProcesarRegistrarTicket
+              controller: App\Controller\TicketController::Registrar
               methods: [POST]
 
 CU01CerrarMesa:
@@ -45,7 +45,13 @@ CU01CerrarMesa:
 
 CU02ConsultarTicket:
               path:     /CU02ConsultarTicket
-              controller: App\Controller\TicketController::ConsultarTicket
+              controller: App\Controller\TicketController::VistaConsultar
+              methods: [GET]
+
+CU02ProcesarConsulta:
+              path:     /CU02ConsultarTicket
+              controller: App\Controller\TicketController::Consultar
+              methods: [POST]
 
 CU02ConsultarTicket2:
               path:     /CU02ConsultarTicket2

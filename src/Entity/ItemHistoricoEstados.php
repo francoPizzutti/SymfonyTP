@@ -45,9 +45,11 @@ class ItemHistoricoEstados
     private $User;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Ticket", inversedBy="HistorialEstados")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Ticket", inversedBy="HistorialEstado")
      */
-    private $Ticket;
+    private $ticket;
+
+
 
     public function getId(): ?int
     {
@@ -98,12 +100,13 @@ class ItemHistoricoEstados
         return $this->Estado_Ticket;
     }
 
-    public function setEstadoTicket(?EstadoTicket $Estado_Ticket): self
+    public function setEstadoTicket(?EstadoTicket $estadoTicket): self
     {
-        $this->Estado_Ticket = $Estado_Ticket;
+        $this->Estado_Ticket = $estadoTicket;
 
         return $this;
     }
+
 
     public function getUser(): ?User
     {
@@ -117,17 +120,6 @@ class ItemHistoricoEstados
         return $this;
     }
 
-    public function getTicket(): ?Ticket
-    {
-        return $this->Ticket;
-    }
-
-    public function setTicket(?Ticket $Ticket): self
-    {
-        $this->Ticket = $Ticket;
-
-        return $this;
-    }
 
     public function __construct()
     {
@@ -136,5 +128,17 @@ class ItemHistoricoEstados
     }
     public function cerrar(){
         $this->Fecha_Hasta=new DateTime();
+    }
+
+    public function getTicket(): ?Ticket
+    {
+        return $this->ticket;
+    }
+
+    public function setTicket(?Ticket $ticket): self
+    {
+        $this->ticket = $ticket;
+
+        return $this;
     }
 }

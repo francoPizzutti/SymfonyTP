@@ -360,6 +360,9 @@
                             </li>
                         </ul>
                     </div>
+
+
+
                     <div class="body table-responsive">
                         <table id="tabla" class="table table-striped table-bordered">
                             <thead>
@@ -367,7 +370,6 @@
                                 <th>ticket</th>
                                 <th>legajo</th>
                                 <th>Fecha Apertura</th>
-                                <th>Hora Apertura</th>
                                 <th>Operador que abrió el ticket</th>
                                 <th>Clasificación</th>
                                 <th>Estado actual</th>
@@ -377,42 +379,20 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr onclick="seleccionar(101014)">
-                                <td >101014</td>
-                                <td>00155</td>
-                                <td>10/06/2005</td>
-                                <td>11:45 pm</td>
-                                <td>Franco Pizzuti</td>
-                                <td>Solicitud Usuario de red</td>
+                            {% for resultado in result %}
+                            <tr onclick="seleccionar({{ resultado.id }})">
+                                <td >{{ resultado.id  }}</td>
+                                <td>{{ resultado.empleado.legajo }}</td>
+                                <td>{{ resultado.fechastring }}</td>
+                                <td>{{ resultado.user.empleado.nombre }} {{ resultado.user.empleado.apellido }}</td>
+                                <td>{{ resultado.lasthistorialclasificacion.clasificacion.nombre }}</td>
                                 <td>Abierto sin derivar</td>
                                 <td>10/11/2017</td>
                                 <td>Administrador de base de datos</td>
 
                             </tr>
-                            <tr onclick="seleccionar(111111)">
-                                <td >111111</td>
-                                <td>00155</td>
-                                <td>10/06/2005</td>
-                                <td>11:45 pm</td>
-                                <td>Franco Pizzuti</td>
-                                <td>Solicitud Usuario de red</td>
-                                <td>Abierto sin derivar</td>
-                                <td>10/11/2017</td>
-                                <td>Administrador de base de datos</td>
+                            {% endfor %}
 
-                            </tr>
-                            <tr onclick="seleccionar(222222)">
-                                <td >222222</td>
-                                <td>00155</td>
-                                <td>10/06/2005</td>
-                                <td>11:45 pm</td>
-                                <td>Franco Pizzuti</td>
-                                <td>Solicitud Usuario de red</td>
-                                <td>Abierto sin derivar</td>
-                                <td>10/11/2017</td>
-                                <td>Administrador de base de datos</td>
-
-                            </tr>
 
 
                             </tbody>

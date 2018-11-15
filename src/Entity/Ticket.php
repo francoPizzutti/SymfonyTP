@@ -44,20 +44,22 @@ class Ticket
      */
     private $User;
 
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\ItemHistoricoEstados", mappedBy="Ticket", cascade={"persist"})
-     */
-    private $HistorialEstados;
 
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\ItemHistoricoClasificacion", mappedBy="Ticket", cascade={"persist"})
-     */
-    private $HistorialClasificaciones;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Intervencion", mappedBy="Ticket", cascade={"persist"})
      */
     private $Intervenciones;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\ItemHistoricoEstados", mappedBy="ticket", cascade={"persist"})
+     */
+    private $HistorialEstados;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\ItemHistoricoClasificacion", mappedBy="ticket", cascade={"persist"})
+     */
+    private $HistorialClasificaciones;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Intervencion", mappedBy="Ticket", cascade={"persist"})
@@ -66,9 +68,10 @@ class Ticket
 
     public function __construct()
     {
+
+        $this->Intervenciones = new ArrayCollection();
         $this->HistorialEstados = new ArrayCollection();
         $this->HistorialClasificaciones = new ArrayCollection();
-        $this->Intervenciones = new ArrayCollection();
 
     }
 
@@ -106,6 +109,11 @@ class Ticket
         return $this->Fecha;
     }
 
+    public function getFechaString(): ?string
+    {
+        return $this->Fecha->format('Y-m-d');
+    }
+
     public function setFecha(?\DateTimeInterface $Fecha): self
     {
         $this->Fecha = $Fecha;
@@ -136,6 +144,47 @@ class Ticket
         $this->User = $User;
 
         return $this;
+    }
+
+
+    /**
+     * @return Collection|Intervencion[]
+     */
+    public function getIntervenciones(): Collection
+    {
+        return $this->Intervenciones;
+    }
+
+    public function addIntervencione(Intervencion $intervencione): self
+    {
+        if (!$this->Intervenciones->contains($intervencione)) {
+            $this->Intervenciones[] = $intervencione;
+            $intervencione->setTicket($this);
+        }
+
+        return $this;
+    }
+
+    public function removeIntervencione(Intervencion $intervencione): self
+    {
+        if ($this->Intervenciones->contains($intervencione)) {
+            $this->Intervenciones->removeElement($intervencione);
+            // set the owning side to null (unless already changed)
+            if ($intervencione->getTicket() === $this) {
+                $intervencione->setTicket(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function inicializar($desc, $nroTicket, Empleado $empleado, User $user)
+    {
+        $this->Descripcion = $desc;
+        $this->Nro_Ticket = $nroTicket;
+        $this->Empleado = $empleado;
+        $this->User = $user;
+        $this->Fecha = new DateTime();
     }
 
     /**
@@ -200,45 +249,17 @@ class Ticket
         return $this;
     }
 
-    /**
-     * @return Collection|Intervencion[]
-     */
-    public function getIntervenciones(): Collection
+    public function getLastHistorialClasificacion(): ItemHistoricoClasificacion
     {
-        return $this->Intervenciones;
+        return $this->HistorialClasificaciones->last();
     }
 
-    public function addIntervencione(Intervencion $intervencione): self
+    public function getLastHistorialEstados(): ItemHistoricoEstados
     {
-        if (!$this->Intervenciones->contains($intervencione)) {
-            $this->Intervenciones[] = $intervencione;
-            $intervencione->setTicket($this);
-        }
-
-        return $this;
+        return $this->HistorialEstados->last();
     }
 
-    public function removeIntervencione(Intervencion $intervencione): self
-    {
-        if ($this->Intervenciones->contains($intervencione)) {
-            $this->Intervenciones->removeElement($intervencione);
-            // set the owning side to null (unless already changed)
-            if ($intervencione->getTicket() === $this) {
-                $intervencione->setTicket(null);
-            }
-        }
 
-        return $this;
-    }
-
-    public function inicializar($desc, $nroTicket, Empleado $empleado, User $user)
-    {
-        $this->Descripcion = $desc;
-        $this->Nro_Ticket = $nroTicket;
-        $this->Empleado = $empleado;
-        $this->User = $user;
-        $this->Fecha = new DateTime();
-    }
 
 
 

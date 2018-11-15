@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Ticket;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -60,5 +61,35 @@ class TicketRepository extends ServiceEntityRepository
 
         // to get just one result:
         // $product = $qb->setMaxResults(1)->getOneOrNullResult();
+    }
+
+    public function consult($idticket, $empleado, $fecha): array
+    {
+
+        $entityManager = $this->getEntityManager();
+
+        $qb = $this->createQueryBuilder('t');
+        if($idticket!=null){
+            $qb->setParameter('id', $idticket)
+                ->where('t.id = :id');
+
+        }
+        if($empleado!=null){
+            $qb ->setParameter('e', $empleado)
+
+                ->andWhere('t.Empleado = :e');
+        }
+        if($fecha!=null){
+            $fechafloor = new datetime(''.$fecha.'00:00:00');
+            $fechaceil = new datetime(''.$fecha.'23:59:59');
+            $qb ->setParameter('ff', $fechafloor)
+                ->setParameter('fc', $fechaceil)
+                ->andWhere('t.Fecha < :fc')
+                ->andWhere('t.Fecha > :ff');
+        }
+
+            return $qb->getQuery()->execute();
+
+
     }
 }
