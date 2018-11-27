@@ -45,6 +45,7 @@ class ItemHistoricoIntervencion
      */
     private $intervencion;
 
+
     public function getId(): ?int
     {
         return $this->id;
@@ -104,6 +105,11 @@ class ItemHistoricoIntervencion
         $this->Fecha_Desde=new DateTime();
     }
 
+
+    public function cerrar(){
+        $this->Fecha_Hasta=new DateTime();
+    }
+
     public function getIntervencion(): ?Intervencion
     {
         return $this->intervencion;
@@ -114,9 +120,5 @@ class ItemHistoricoIntervencion
         $this->intervencion = $intervencion;
 
         return $this;
-    }
-
-    public function cerrar(){
-        $this->Fecha_Hasta=new DateTime();
     }
 }

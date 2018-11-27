@@ -40,6 +40,7 @@ class Intervencion
      */
     private $HistorialIntervencion;
 
+
     public function __construct()
     {
         $this->HistorialIntervencion = new ArrayCollection();

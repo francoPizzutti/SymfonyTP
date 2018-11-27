@@ -56,13 +56,13 @@
                         </ul>
                     </div>
                     <div class="body">
-                        <form>
+                        <form id="formulario" method="post" action="{{ path('CU02ProcesarConsulta') }}">
                             <!-- NUMERO DE TICKET Y NUMERO DE LEGAJO -->
                             <div class="row clearfix">
                                 <div class="col-md-6">
                                     <div class="form-group form-float">
                                         <div class="form-line">
-                                            <input type="text" class="form-control" >
+                                            <input type="number" class="form-control" name="idTicket" >
                                             <label class="form-label">Numero de Ticket</label>
                                         </div>
                                     </div>
@@ -72,7 +72,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group form-float">
                                         <div class="form-line">
-                                            <input type="text" class="form-control" >
+                                            <input type="number" class="form-control" name="legajo">
                                             <label class="form-label">Numero de Legajo</label>
                                         </div>
                                     </div>
@@ -85,25 +85,11 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
 
-                                            <select class="form-control show-tick" title="Clasificacion de ticket">
-                                                <option >Todos</option>
-                                                <option>Cambio de Configuracion de Sistema Operativo de PC</option>
-                                                <option>Problema en el funcionamiento del Sistema Operativo de PC
-                                                </option>
-                                                <option>Solicitud de instalacion de aplicaciones</option>
-                                                <option>Mal funcionamiento de hardware</option>
-                                                <option>Problema de autenticación en los distintos sistemas</option>
-                                                <option>Problema de acceso a la red local o remota</option>
-                                                <option>Solicitud de usuario de red</option>
-                                                <option>Solicitud de usuario para sistemas informaticos que utiliza la empresa</option>
-                                                <option>Modificacion en los perfiles de usuarios</option>
-                                                <option>Solicitud de cambio de contraseña</option>
-                                                <option>Problema en los sistemas de la empresa</option>
-                                                <option>Problemas con el correo electrónico</option>
-                                                <option>Solicitud de nuevos puestos de trabajo</option>
-                                                <option>Solicitud de soporte en el uso de alguna aplicación o sistema</option>
-                                                <option>Otros</option>
-                                            </select>
+                                        <select class="form-control show-tick" id="clasificacion_ticket" name="clasificacion">
+                                            {% for clas in clasificaciones %}
+                                                <option value="{{ clas.id }}">{{ clas.nombre }}</option>
+                                            {% endfor %}
+                                        </select>
 
                                     </div>
                                 </div>
@@ -115,34 +101,22 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
 
-                                            <select class="form-control show-tick" title="Estado de ticket">
-                                                <option>Todos</option>
-                                                <option>abierto sin derivar</option>
-                                                <option>abierto derivado</option>
-                                                <option>solucionado a la espera OK</option>
-                                                <option>cerrado</option>
-                                            </select>
+                                        <select class="form-control show-tick" id="estado_ticket" name="estado">
+                                            {% for estado in estados %}
+                                                <option value="{{ estado.id }}">{{ estado.descripcion }}</option>
+                                            {% endfor %}
+                                        </select>
 
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
 
-                                            <select class="form-control show-tick" title="Ultimo grupo de resolución">
-                                                <option>Todos</option>
-                                                <option>Mesa de ayuda</option>
-                                                <option>Unidades de soporte</option>
-                                                <option>Servicio tecnico</option>
-                                                <option>Administrador de base de datos</option>
-                                                <option>Administrador SUSE linux</option>
-                                                <option>Administrador proxy y correo electronico</option>
-                                                <option>Administrador Debian</option>
-                                                <option>Redes LAN</option>
-                                                <option>Comunicaciones</option>
-                                                <option>Desarrollo sistema comercial</option>
-                                                <option>Desarrollo sistema RRHH</option>
-                                                <option>Desarrollo sistema de reclamos</option>
-                                            </select>
+                                        <select class="form-control show-tick" id="gruposResolucion" name="grupoRes">
+                                            {% for grupo in grupos %}
+                                                <option value="{{ grupo.id }}">{{ grupo.nombre }}</option>
+                                            {% endfor %}
+                                        </select>
 
                                     </div>
                                 </div>
@@ -156,7 +130,7 @@
                                                     <div class="form-group">
                                                         <div class="form-line">
 
-                                                            <input type="text" id="fechaCreacion" placeholder="Fecha de Creación" class="form-control" data-modal="true" data-large-mode="true" data-lang="es" data-format="d-m-Y" data-large-default="true" onfocus="CreacionInit()">
+                                                            <input type="text" id="fechaCreacion" name="fechaCreacion" placeholder="Fecha de Creación" class="form-control" data-modal="true" data-large-mode="true" data-lang="es" data-format="d-m-Y" data-large-default="true" onfocus="CreacionInit()">
 
                                                             <script>
                                                                 function CreacionInit() {
@@ -173,7 +147,7 @@
                                                     <div class="form-group ">
                                                         <div class="form-line ">
 
-                                                            <input type="text" id="ultimoCambio" placeholder="Fecha de Último cambio de estado" class="form-control" data-modal="true" data-large-mode="true" data-lang="es" data-format="d-m-Y" data-large-default="true" onfocus="UltimoInit()">
+                                                            <input type="text" id="ultimoCambio" name="fechaCambio" placeholder="Fecha de Último cambio de estado" class="form-control" data-modal="true" data-large-mode="true" data-lang="es" data-format="d-m-Y" data-large-default="true" onfocus="UltimoInit()">
 
                                                             <script>
                                                                 function UltimoInit() {
@@ -189,7 +163,7 @@
 
 
 
-                            <a href="{{ url('CU02ConsultarTicket2') }}"><button type="button" class="btn bg-cyan m-t-15 waves-effect">BUSCAR</button></a>
+                            <button type="submit" class="btn bg-cyan m-t-15 waves-effect">BUSCAR</button>
 
 
                         </form>
