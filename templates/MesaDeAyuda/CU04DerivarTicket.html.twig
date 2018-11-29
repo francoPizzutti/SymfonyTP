@@ -63,14 +63,14 @@
                         </ul>
                     </div>
                     <div class="body">
-                        <form>
+
 
                            <div class="row clearfix">
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                     <div class="form-group form-float">
                                         <div id="inp1" class="form-line" >
                                             <label class="form-label" style=" top: -10px; font-size: 12px;">Estado actual del ticket</label>
-                                            <input type="text" class="form-control" readonly value="Abierto en mesa de ayuda" disabled>
+                                            <input type="text" class="form-control" readonly value="{{ dto.Estado }}" disabled>
 
                                         </div>
                                     </div>
@@ -85,8 +85,7 @@
                                     <div class="form-group form-float">
                                         <div id="inp2" class="form-line">
                                             <label class="form-label" style=" top: -10px; font-size: 12px;">Descripción del Problema</label>
-                                            <textarea  id="descripcion" name="description" cols="30" rows="5" class="form-control no-resize" readonly>El problema fue que se rompió la pantalla y cuando la quise arreglar se termino de hacer pelota!!!!
-</textarea>
+                                            <textarea  id="descripcion" name="description" cols="30" rows="5" class="form-control no-resize" readonly>{{ dto.Descripcion }}</textarea>
 
 
                                         </div>
@@ -101,40 +100,30 @@
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 
 
-                                            <select class="form-control show-tick"  id="nuevo_estado_ticket" title="Nuevo estado de ticket">
-                                                <option value="">Todos</option>
-                                                <option>abierto sin derivar</option>
-                                                <option>abierto derivado</option>
-                                                <option>solucionado a la espera OK</option>
-                                                <option>cerrado</option>
+                                            <select class="form-control show-tick"  id="nuevo_estado_ticket">
+                                                <option value="" selected>{{ dto.NuevoE }}</option>
                                             </select>
 
                                 </div>
                             </div>
 
+                        <form id="formulario" method="post" action="{{ path('CU04ProcesarDerivar') }}">
+
+                            <input type="hidden" name="ticket" value="{{ dto.Id }}">
 
                             <!-- CLASIFICACION DE TICKET-->
                             <div class="row clearfix">
                                 <div class="col-lg-12 col-md-12 col-sm-14 col-xs-12">
 
-                                            <select class="form-control show-tick" id="clasificacion_ticket" title="Clasificacion de ticket">
-                                                <option value="">Todos</option>
-                                                <option>Cambio de Configuracion de Sistema Operativo de PC</option>
-                                                <option>Problema en el funcionamiento del Sistema Operativo de PC
-                                                </option>
-                                                <option>Solicitud de instalacion de aplicaciones</option>
-                                                <option>Mal funcionamiento de hardware</option>
-                                                <option>Problema de autenticación en los distintos sistemas</option>
-                                                <option>Problema de acceso a la red local o remota</option>
-                                                <option>Solicitud de usuario de red</option>
-                                                <option>Solicitud de usuario para sistemas informaticos que utiliza la empresa</option>
-                                                <option>Modificacion en los perfiles de usuarios</option>
-                                                <option>Solicitud de cambio de contraseña</option>
-                                                <option>Problema en los sistemas de la empresa</option>
-                                                <option>Problemas con el correo electrónico</option>
-                                                <option>Solicitud de nuevos puestos de trabajo</option>
-                                                <option>Solicitud de soporte en el uso de alguna aplicacion o sistema</option>
-                                                <option>Otros</option>
+                                            <select class="form-control show-tick" id="clasificacion_ticket" name="clasificacion">
+                                                {% for clasificacion in clasificaciones %}
+                                                    {% if clasificacion.Id == dto.Clasificacion %}
+                                                <option value="{{ clasificacion.Id }}" selected>{{ clasificacion.Nombre }}</option>
+                                                {% else %}
+                                                    <option value="{{ clasificacion.Id }}">{{ clasificacion.Nombre }}</option>
+                                                {% endif %}
+                                                {% endfor %}
+
                                             </select>
 
                                 </div>
@@ -145,20 +134,14 @@
                             <div class="row clearfix">
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 
-                                            <select class="form-control show-tick" id="grupo_resolucion" title="Seleccionar grupo de resolución">
-                                                <option value="">Todos</option>
-                                                <option>Mesa de ayuda</option>
-                                                <option>Unidades de soporte</option>
-                                                <option>Servicio tecnico</option>
-                                                <option>Administrador de base de datos</option>
-                                                <option>Administrador SUSE linux</option>
-                                                <option>Administrador proxy y correo electronico</option>
-                                                <option>Administrador Debian</option>
-                                                <option>Redes LAN</option>
-                                                <option>Comunicaciones</option>
-                                                <option>Desarrollo sistema comercial</option>
-                                                <option>Desarrollo sistema RRHH</option>
-                                                <option>Desarrollo sistema de reclamos</option>
+                                            <select id="grupo_resolucion" class="form-control show-tick" name="grupo" title="Seleccionar grupo de resolución">
+                                                {% for grupo in grupos  %}
+                                                    {% if grupo.Id == dto.Grupo %}
+                                                <option value="{{ grupo.Id }}" selected>{{ grupo.Nombre }}</option>
+                                                {% else %}
+                                                    <option value="{{ grupo.Id }}">{{ grupo.Nombre }}</option>
+                                                {% endif %}
+                                                {% endfor %}
                                             </select>
 
                                 </div>
@@ -170,7 +153,7 @@
                                     <div class="col-sm-12">
                                         <div class="form-group form-float">
                                             <div class="form-line">
-                                            <textarea  id="observaciones" name="description" cols="30" rows="5" class="form-control no-resize" required></textarea>
+                                            <textarea  id="observaciones" name="observacion" cols="30" rows="5" class="form-control no-resize" required>{{ requestflash.get(0) }}</textarea>
 
                                                 <label class="form-label">Observaciones</label>
                                             </div>
@@ -208,7 +191,7 @@
 
                                             <div class="button-demo">
                                                 <button type="button" class="btn bg-grey waves-effect" onclick="cerrarIzimodal()">CANCELAR</button>
-                                                <button type="button" class="btn bg-red waves-effect" onclick="successNotify('El ticket Nro {{ idTicket }} fué derivado con éxito')">ACEPTAR</button>
+                                                <button type="button" class="btn bg-red waves-effect" onclick="submit()">ACEPTAR</button>
 
                                             </div>
                                         </div>
@@ -267,11 +250,10 @@
         event.preventDefault();
 
         var obs = document.getElementById('observaciones');
-        var nest = document.getElementById('nuevo_estado_ticket');
         var grup = document.getElementById('grupo_resolucion');
 
 
-        if(obs.value == ""|| nest.value==null||grup.value==null){
+        if(obs.value == ""||grup.value==null){
 
            /* $('#modal-alert').iziModal({
                 headerColor: '#d43838',
@@ -280,7 +262,7 @@
                 pauseOnHover: true
             });
             $('#modal-alert').iziModal('open'); */
-          infoNotify('Nuevo estado, grupo de resolución u observaciones no pueden ser nulos');
+          infoNotify('Grupo de resolución u observaciones no pueden ser nulos');
 
         }
         else {
@@ -301,5 +283,25 @@
     }
 
 </script>
+    <script>
+        function success(string) {
+            console.log("estamos en la funcion succes con el string" + string);
+
+            sacar();
+            successNotify(string);
+
+            document.getElementById("cancel").disabled = true;
+            document.getElementById("grupo_resolucion").disabled = true;
+            document.getElementById("clasificacion_ticket").disabled = true;
+            document.getElementById("submm").disabled = true;
+            document.getElementById('observaciones').readOnly = true;
+
+
+        }
+        function submit() {
+            document.getElementById('formulario').submit();
+
+        }
+    </script>
 
  {% endblock %}
