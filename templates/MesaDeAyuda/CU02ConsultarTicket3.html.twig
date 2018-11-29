@@ -32,7 +32,7 @@
 <section class="content">
     <div class="container-fluid">
         <div class="block-header">
-            <h2>DETALLE DE TICKET Nro: => {{ idTicket }}</h2>
+            <h2>DETALLE DE TICKET Nro: {{ idTicket }}</h2>
         </div>
 
 
@@ -87,8 +87,8 @@
                 <div class="card">
                     <div class="header">
                         <h2>
-                            DETALLE DE LOS DATOS DEL USUARIO
-                            <small>Se presentan aqui los detalles del usuario que hizo el reclamo</small>
+                            DETALLE DE LOS DATOS DEL EMPLEADO
+                            <small>Se presentan aqui los detalles del empleado que hizo el reclamo</small>
                         </h2>
                         <ul class="header-dropdown m-r--5">
                             <li class="dropdown">
@@ -112,7 +112,7 @@
                                 <div class="form-group">
                                     <div  id="inp1" class="form-line">
                                         <label for="nombre">Nombre</label>
-                                        <input type="text" id="nombre" class="form-control" value="Lisandro Adolfo" readonly>
+                                        <input type="text" id="nombre" class="form-control" value="{{ empleado.Nombre }}" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -121,7 +121,7 @@
                                 <div class="form-group">
                                     <div id="inp2" class="form-line">
                                         <label for="apellido">Apellido</label>
-                                        <input type="text" id="apellido" class="form-control" value="Rattero" readonly>
+                                        <input type="text" id="apellido" class="form-control" value="{{ empleado.Apellido }}" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -140,7 +140,7 @@
                                 <div class="form-group">
                                     <div id="inp3" class="form-line">
                                         <label for="legajo">Número de Legajo</label>
-                                        <input type="text" class="form-control" id="legajo" value="001014" readonly>
+                                        <input type="text" class="form-control" id="legajo" value="{{ empleado.Legajo }}" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -148,7 +148,7 @@
                                 <div class="form-group">
                                     <div id="inp4" class="form-line">
                                         <label for="cargo">Descripción de Cargo</label>
-                                        <input type="text" id="cargo" class="form-control" value="Encargado General" readonly>
+                                        <input type="text" id="cargo" class="form-control" value="{{ empleado.Cargo }}" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -156,7 +156,7 @@
                                 <div class="form-group">
                                     <div id="inp5" class="form-line">
                                         <label for="interno">Telefono Interno</label>
-                                        <input type="text" class="form-control" id="interno" value="114" readonly>
+                                        <input type="text" class="form-control" id="interno" value="{{ empleado.TelInterno }}" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -164,7 +164,7 @@
                                 <div class="form-group">
                                     <div id="inp6" class="form-line">
                                         <label for="directo">Teléfono Directo</label>
-                                        <input type="text" class="form-control" id="directo" value="0343-4535351" readonly>
+                                        <input type="text" class="form-control" id="directo" value="{{ empleado.TelDirecto }}" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -185,7 +185,7 @@
                                 <div class="form-group">
                                     <div id="inp7" class="form-line">
                                         <label for="calle">Calle</label>
-                                        <input type="text" id="calle" class="form-control" value="Suipacha" readonly>
+                                        <input type="text" id="calle" class="form-control" value="{{ empleado.Calle }}" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -193,7 +193,7 @@
                                 <div class="form-group">
                                     <div id="inp8" class="form-line">
                                         <label for="numcalle">Número</label>
-                                        <input type="text" class="form-control" id="numcalle" value="3919" readonly>
+                                        <input type="text" class="form-control" id="numcalle" value="{{ empleado.Numero }}" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -201,7 +201,7 @@
                                 <div class="form-group">
                                     <div id="inp9" class="form-line">
                                         <label for="piso">Piso</label>
-                                        <input type="text" id="piso" class="form-control" value="5-b" readonly>
+                                        <input type="text" id="piso" class="form-control" value="{{ empleado.Piso }}" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -209,7 +209,7 @@
                                 <div class="form-group">
                                     <div id="inp10" class="form-line">
                                         <label for="oficina">Oficina</label>
-                                        <input type="text" id="oficina" class="form-control" value="Administración" readonly>
+                                        <input type="text" id="oficina" class="form-control" value="{{ empleado.Oficina }}" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -260,19 +260,20 @@
                             </tr>
                             </thead>
                             <tbody>
+                            {% for hist in historial %}
                             <tr>
-                                <td>10/06/2005</td>
-                                <td>11:45 pm</td>
-                                <td>Franco Pizzuti</td>
-                                <td>Abierto sin derivar</td>
+                                <td>{{ hist.Fecha }}</td>
+                                <td>{{ hist.Hora }}</td>
+                                <td>{{ hist.Usuario }}</td>
+                                <td>{{ hist.Estado }}</td>
                                 <td>
-                                    Administrador SUSE linux
+                                    {{ hist.Grupo }}
                                 </td>
-                                <td>Solicitud de usuario para sistemas informaticos que utiliza la empresa</td>
+                                <td>{{ hist.Clasificacion }}</td>
                                 <td>
                                     <div class="icon-button-demo">
                                         <button type="button" class="btn bg-pink waves-effect waves-float" data-trigger="focus" data-container="body" data-toggle="popover"
-                                                data-placement="left" title="Informe de Observaciones" data-content="El problema fue resuelto por el equipo informatico y queda a la espera que el equipo de bases de datos soluciones el problema">
+                                                data-placement="left" title="Informe de Observaciones" data-content="{{ hist.Observaciones }}">
                                             <i class="material-icons">more_horiz</i>
                                         </button>
                                     </div>
@@ -280,155 +281,7 @@
 
 
                             </tr>
-
-                            <tr>
-                                <td>13/07/2005</td>
-                                <td>12:55 pm</td>
-                                <td>Franco Beber</td>
-                                <td>Abierto derivado</td>
-                                <td>
-                                    Administrador de base de datos
-                                </td>
-                                <td>Solicitud de usuario para sistemas informaticos que utiliza la empresa</td>
-                                <td>
-                                    <div class="icon-button-demo">
-                                        <button type="button" class="btn bg-pink waves-effect waves-float" data-trigger="focus" data-container="body" data-toggle="popover"
-                                                data-placement="left" title="Informe de Observaciones" data-content="El problema fue resuelto por el equipo de bases de datos pero persiste el inconveniente">
-                                            <i class="material-icons">more_horiz</i>
-                                        </button>
-                                    </div>
-                                </td>
-
-
-                            </tr>
-
-                            <tr>
-                                <td>18/09/2005</td>
-                                <td>16:30 pm</td>
-                                <td>Lisandro Ratter</td>
-                                <td>Abierto derivado</td>
-                                <td>
-                                    Redes LAN
-                                </td>
-                                <td>Solicitud de usuario para sistemas informaticos que utiliza la empresa</td>
-                                <td>
-                                    <div class="icon-button-demo">
-                                        <button type="button" class="btn bg-pink waves-effect waves-float" data-trigger="focus" data-container="body" data-toggle="popover"
-                                                data-placement="left" title="Informe de Observaciones" data-content="Quedo solucionado el problema y se le pudo dar usuario al nuevo sistema informatico">
-                                            <i class="material-icons">more_horiz</i>
-                                        </button>
-                                    </div>
-                                </td>
-
-
-                            </tr>
-
-                            <tr>
-                                <td>19/10/2005</td>
-                                <td>09:45 pm</td>
-                                <td>Hector Crispens</td>
-                                <td>A la espera OK</td>
-                                <td>
-                                    Desarrollo sistema comercial
-                                </td>
-                                <td>Solicitud de usuario para sistemas informaticos que utiliza la empresa</td>
-                                <td>
-                                    <div class="icon-button-demo">
-                                        <button type="button" class="btn bg-pink waves-effect waves-float" data-trigger="focus" data-container="body" data-toggle="popover"
-                                                data-placement="left" title="Informe de Observaciones" data-content="El inconveniente esta solucionado">
-                                            <i class="material-icons">more_horiz</i>
-                                        </button>
-                                    </div>
-                                </td>
-
-
-                            </tr>
-
-                            <!-- COPIAS DE LAS TR-->
-
-                            <tr>
-                                <td>10/06/2005</td>
-                                <td>11:45 pm</td>
-                                <td>Franco Pizzuti</td>
-                                <td>Abierto sin derivar</td>
-                                <td>
-                                    Administrador SUSE linux
-                                </td>
-                                <td>Solicitud de usuario para sistemas informaticos que utiliza la empresa</td>
-                                <td>
-                                    <div class="icon-button-demo">
-                                        <button type="button" class="btn bg-pink waves-effect waves-float" data-trigger="focus" data-container="body" data-toggle="popover"
-                                                data-placement="left" title="Informe de Observaciones" data-content="El problema fue resuelto por el equipo informatico y queda a la espera que el equipo de bases de datos soluciones el problema">
-                                            <i class="material-icons">more_horiz</i>
-                                        </button>
-                                    </div>
-                                </td>
-
-
-                            </tr>
-
-                            <tr>
-                                <td>13/07/2005</td>
-                                <td>12:55 pm</td>
-                                <td>Franco Beber</td>
-                                <td>Abierto derivado</td>
-                                <td>
-                                    Administrador de base de datos
-                                </td>
-                                <td>Solicitud de usuario para sistemas informaticos que utiliza la empresa</td>
-                                <td>
-                                    <div class="icon-button-demo">
-                                        <button type="button" class="btn bg-pink waves-effect waves-float" data-trigger="focus" data-container="body" data-toggle="popover"
-                                                data-placement="left" title="Informe de Observaciones" data-content="El problema fue resuelto por el equipo de bases de datos pero persiste el inconveniente">
-                                            <i class="material-icons">more_horiz</i>
-                                        </button>
-                                    </div>
-                                </td>
-
-
-                            </tr>
-
-                            <tr>
-                                <td>18/09/2005</td>
-                                <td>16:30 pm</td>
-                                <td>Lisandro Ratter</td>
-                                <td>Abierto derivado</td>
-                                <td>
-                                    Redes LAN
-                                </td>
-                                <td>Solicitud de usuario para sistemas informaticos que utiliza la empresa</td>
-                                <td>
-                                    <div class="icon-button-demo">
-                                        <button type="button" class="btn bg-pink waves-effect waves-float" data-trigger="focus" data-container="body" data-toggle="popover"
-                                                data-placement="left" title="Informe de Observaciones" data-content="Quedo solucionado el problema y se le pudo dar usuario al nuevo sistema informatico">
-                                            <i class="material-icons">more_horiz</i>
-                                        </button>
-                                    </div>
-                                </td>
-
-
-                            </tr>
-
-                            <tr>
-                                <td>19/10/2005</td>
-                                <td>09:45 pm</td>
-                                <td>Hector Crispens</td>
-                                <td>A la espera OK</td>
-                                <td>
-                                    Desarrollo sistema comercial
-                                </td>
-                                <td>Solicitud de usuario para sistemas informaticos que utiliza la empresa</td>
-                                <td>
-                                    <div class="icon-button-demo">
-                                        <button type="button" class="btn bg-pink waves-effect waves-float" data-trigger="focus" data-container="body" data-toggle="popover"
-                                                data-placement="left" title="Informe de Observaciones" data-content="El inconveniente esta solucionado">
-                                            <i class="material-icons">more_horiz</i>
-                                        </button>
-                                    </div>
-                                </td>
-
-
-                            </tr>
+                            {% endfor %}
 
                             </tbody>
                         </table>
