@@ -62,11 +62,15 @@ DetalleTicket:
               controller: App\Controller\TicketController::VerDetalleTicket
 
 CU04DerivarTicket:
-              path:     /CU04DerivarTicket/{id}
+              path:     /CU04DerivarTicket
+              controller: App\Controller\TicketController::VistaDerivarTicket
+
+CU04ProcesarDerivar:
+              path:     /CU04ProcesarDerivar
               controller: App\Controller\TicketController::DerivarTicket
 
 CU03CerrarTicket:
-              path:     /CU03CerrarTicket/{id}
+              path:     /CU03CerrarTicket
               controller: App\Controller\TicketController::CerrarTicket
 
 

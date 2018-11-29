@@ -120,9 +120,9 @@ AUX.fecha_desde < '".$fechaceilU->format('Y-m-d H:i:s')."'";
         if($estado!=0) {
             $conn = $this->getEntityManager()->getConnection();
 
-            $sql = 'select t.id from ticket t, (select he.ticket_id, max(he.id), he.estado_ticket_id 
-                      from item_historico_estados he group by he.ticket_id, he.estado_ticket_id) aux
-                      where aux.ticket_id = t.id and aux.estado_ticket_id = '.$estado;
+            $sql = 'select aux.ticket_id from (select he.ticket_id, max(he.id) as heid
+                      from item_historico_estados he group by he.ticket_id) aux, item_historico_estados ith
+                      where aux.heid = ith.id and ith.estado_ticket_id = '.$estado;
             $stmt = $conn->prepare($sql);
             $stmt->execute();
             $qb ->setParameter('est', $stmt->fetchAll())

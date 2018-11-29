@@ -60,18 +60,15 @@
                     </div>
                     <div class="body">
                         <div class="button-demo">
-                            <button type="button" class="btn bg-deep-orange waves-effect" {{ btnDerivar }} onclick="derivar({{ idTicket }})">DERIVAR</button>
+                            <form method="post" action="{{ path('CU04DerivarTicket') }}">
+                                <input type="hidden" name="ticket" value="{{ idTicket }}">
+                            <button type="submit" class="btn bg-deep-orange waves-effect" {{ btnDerivar }}>DERIVAR</button>
+                            </form>
 
-                            <button type="button" class="btn bg-pink waves-effect" {{ btnCerrar }} onclick="cerrar({{ idTicket }})">CERRAR</button>
-                            <script>
-                                function derivar(id) {
-
-                                    location.href="/CU04DerivarTicket/"+ {{ idTicket }};
-                                }
-                                function cerrar(id) {
-                                    location.href="/CU03CerrarTicket/" + {{ idTicket }};
-                                }
-                            </script>
+                            <form method="post" action="{{ path('CU03CerrarTicket') }}">
+                                <input type="hidden" name="ticket" value="{{ idTicket }}">
+                            <button type="button" class="btn bg-pink waves-effect" {{ btnCerrar }}>CERRAR</button>
+                            </form>
                         </div>
                     </div>
                 </div>

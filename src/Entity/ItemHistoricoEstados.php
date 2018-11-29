@@ -144,9 +144,8 @@ class ItemHistoricoEstados
         $this->Fecha_Desde=new DateTime();
 
     }
-    public function cerrar($obs){
+    public function cerrar(){
         $this->Fecha_Hasta=new DateTime();
-        $this->Observacion = $obs;
     }
 
     public function getTicket(): ?Ticket

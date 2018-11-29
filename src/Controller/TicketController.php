@@ -13,10 +13,12 @@ use App\Entity\ItemHistoricoEstados;
 use App\Entity\ItemHistoricoIntervencion;
 use App\Entity\Ticket;
 use App\Service\clasificacionesDTO;
+use App\Service\derivarDTO;
 use App\Service\estadosDTO;
 use App\Service\gruposDTO;
 use App\Service\historicoDTO;
 use App\Service\usuarioDTO;
+use PhpParser\Node\Stmt\Return_;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Tests\Compiler\E;
 use Symfony\Component\HttpFoundation\Request;
@@ -135,6 +137,38 @@ class TicketController extends AbstractController
 
     }
 
+    /* PRESENTA LA VISTA PARA DERIVAR UN TICKET*/
+    public function VistaDerivarTicket(Request $request, requestflash $requestflash){
+
+        if ($this->getUser()!= null && $this->getUser()->getNivel()==0) {
+        //BUSCAMOS EL TICKET RECIBIDO EN EL REQUEST
+        $repository = $this->getDoctrine()->getRepository(Ticket::class);
+        $idTicket = $request->request->get('ticket');
+        $ticket = $repository->find($idTicket);
+
+            //BUSCAMOS TODAS LAS CLASIFICACIONES ORDENADAS ALFABETICAMENTE
+            $clasificaciones = $this->clasificacionesOrdenadas();
+
+            //LA LISTA DE GRUPOS DE RESOLUCION
+            $grupos = $this->gruposOrdenados();
+
+        $dto = $this->buildDerivarDTO($ticket);
+        $requestflash->set("");
+
+
+        $load = 'onload=sacar()';
+
+        Return $this->render('MesaDeAyuda/CU04DerivarTicket.html.twig',[
+            'titulo' => 'Derivar Ticket',
+            'load' => $load,
+            'clasificaciones' => $clasificaciones,
+            'grupos' => $grupos,
+            'requestflash' => $requestflash,
+            'dto' => $dto
+        ]);
+    }
+    else return $this->redirectToRoute('home');
+    }
 
 
 
@@ -236,6 +270,7 @@ class TicketController extends AbstractController
            $hr = new ItemHistoricoClasificacion();
            $hr->setUser($usuario);
            $hr->setClasificacion($clasificacion);
+           $hr->setObservacion("Primera clasificacion del ticket");
            /* #END# ITEM HISTORICO DE RECLASIFICACION*/
 
            /*CREAMOS Y SETEAMOS EL ITEM HISTORICO DE ESTADOS*/
@@ -244,6 +279,7 @@ class TicketController extends AbstractController
            $he->setEstadoTicket($estado);
            $he->setItemClasificacion($hr);
            $he->setGrupoResolucion($mesaAyuda);
+           $he->setObservacion("Creación del ticket");
            /* #END# ITEM HISTORICO DE ESTADOS */
 
 
@@ -438,7 +474,7 @@ class TicketController extends AbstractController
                 ]);
             }
             else{
-                return $this->render('MesaDeAyuda/CU02ConsultarTicket2.html.twig',['titulo' => 'fallo',
+                return $this->render('MesaDeAyuda/CU02ConsultarTicket2.html.twig',['titulo' => 'No existen resultados',
                     'load' => 'sacar()',
                     'stat' => [0,0,0,0],
                     'requestflash' => $requestflash,
@@ -448,12 +484,157 @@ class TicketController extends AbstractController
 
 
         }
+        else{
+            return $this->redirectToRoute('home');
+        }
 
 
 
 
     }
 
+
+    /* PROCESA EL FORMULARIO PARA DERIVAR UN TICKET */
+    public function DerivarTicket(Request $request, requestflash $requestflash){
+        if ($this->getUser()!= null && $this->getUser()->getNivel()==0) {
+
+            //RECUPERAMOS LOS PARAMETROS ENVIADOS EN EL FORMULARIO
+            $observaciones = $request->request->get('observacion');
+            $idclasificacion = $request->request->get('clasificacion');
+            $idgrupoResolucion = $request->request->get('grupo');
+
+
+            $requestflash->set($observaciones);
+
+            //BUSCAMOS EL TICKET RECIBIDO EN EL REQUEST
+            $repository = $this->getDoctrine()->getRepository(Ticket::class);
+            $idTicket = $request->request->get('ticket');
+
+            $ticket = $repository->find($idTicket);
+
+            if ($idgrupoResolucion!= 1 && $this->ValidaDescripcion($observaciones) ) {
+
+
+
+
+                /* FUNCIONES PARA LA VISTA PARA RETORNAR EN CASO QUE EL TICKET HAYA SIDO DERIVADO CORRECTAMENTE*/
+
+                //BUSCAMOS TODAS LAS CLASIFICACIONES ORDENADAS ALFABETICAMENTE
+                $clasificaciones = $this->clasificacionesOrdenadas();
+
+                //LA LISTA DE GRUPOS DE RESOLUCION
+                $grupos = $this->gruposOrdenados();
+
+                /* END VISTA*/
+
+                //VAMOS A EVALUAR SI HA CAMBIADO LA CLASIFICACION
+                $repository = $this->getDoctrine()->getRepository(ClasificacionTicket::class);
+                $clasificacion = $repository->find($idclasificacion);
+                $histc = $ticket->getLastHistorialClasificacion();
+
+                if ($histc->getClasificacion() != $clasificacion) {
+                    $histc->cerrar();
+                    $hc = new ItemHistoricoClasificacion();
+                    $hc->setClasificacion($clasificacion);
+                    $hc->setUser($this->getUser());
+                    $hc->setObservacion($observaciones);
+                    $histc = $hc;
+                    $ticket->addHistorialClasificacione($histc);
+                }
+
+                //BUSCAMOS EL GRUPO DE RESOLUCION QUE RECIBIRA EL TICKET
+                $repository = $this->getDoctrine()->getRepository(GrupoResolucion::class);
+                $gr = $repository->find($idgrupoResolucion);
+
+                //BUSCAMOS EL ESTADO ABIERTO DERIVADO
+                $repository = $this->getDoctrine()->getRepository(EstadoTicket::class);
+                $et = $repository->find(2);
+
+                //CERRAMOS EL ULTIMO HISTORIAL DE ESTADOS Y LO CERRAMOS
+                $ticket->getLastHistorialEstados()->cerrar($observaciones);
+                $he = new ItemHistoricoEstados();
+                $he->setUser($this->getUser());
+                $he->setObservacion($observaciones);
+                $he->setItemClasificacion($histc);
+                $he->setGrupoResolucion($gr);
+                $he->setEstadoTicket($et);
+
+                //AGREGAMOS EL NUEVO ITEM HISTORICO DE ESTADOS AL TICKET
+                $ticket->addHistorialEstado($he);
+
+                //EN EL CASO DE QUE EL TICKET POSEA INTERVENCIONES ABIERTAS PARA EL TICKET
+                if($ticket->poseeIntervencionAbierta($gr)){
+                    $inT = $ticket->recuperarIntervencion($gr);
+                    $inT->setObservaciones($observaciones);
+                    $hi = $inT->getHistorialIntervencion()->last();
+                    $hi->cerrar();
+
+
+
+                }else{
+                    $inT = new Intervencion();
+                    $inT->setGrupoResolucion($gr);
+                    $inT->setObservaciones($observaciones);
+                    $ticket->addIntervencione($inT);
+
+                }
+                //Buscamos el estado de la intervencion asignada
+                $repository = $this->getDoctrine()->getRepository(EstadoIntervencion::class);
+                $estIntervencion = $repository->find(1);
+
+                //Creamos el nuevo item historico de intervencion y se lo asociamos a la intervencion
+                $nuevohi = new ItemHistoricoIntervencion();
+                $nuevohi->setUser($this->getUser());
+                $nuevohi->setEstadoIntervencion($estIntervencion);
+                $inT->addHistorialIntervencion($nuevohi);
+
+
+                $dto = $this->buildDerivarDTO($ticket);
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->persist($ticket);
+                $entityManager->flush();
+
+                $load = 'onload=success("el ticket se derivo correctamente")';
+
+                Return $this->render('MesaDeAyuda/CU04DerivarTicket.html.twig', [
+                    'titulo' => 'Derivar Ticket',
+                    'load' => $load,
+                    'clasificaciones' => $clasificaciones,
+                    'grupos' => $grupos,
+                    'requestflash' => $requestflash,
+                    'dto' => $dto
+                ]);
+
+            }
+            else{
+                //BUSCAMOS TODAS LAS CLASIFICACIONES ORDENADAS ALFABETICAMENTE
+                $clasificaciones = $this->clasificacionesOrdenadas();
+
+                //LA LISTA DE GRUPOS DE RESOLUCION
+                $grupos = $this->gruposOrdenados();
+
+                $dto = $this->buildDerivarDTO($ticket);
+
+                $load = 'onload=errorNotify("El ticket no pudo ser derivado, error en grupo de resolución u observaciones")';
+
+                Return $this->render('MesaDeAyuda/CU04DerivarTicket.html.twig', [
+                    'titulo' => 'Derivar Ticket',
+                    'load' => $load,
+                    'clasificaciones' => $clasificaciones,
+                    'grupos' => $grupos,
+                    'requestflash' => $requestflash,
+                    'dto' => $dto
+                ]);
+
+
+            }
+        }
+
+        else{
+            $this->redirectToRoute('home');
+        }
+
+    }
 
 
 
@@ -679,6 +860,26 @@ class TicketController extends AbstractController
     }
 
 
+    /* CONSTRUYE  EL DTO PARA ENVIAR A LA VENTANA DERIVAR  */
+    public function buildDerivarDTO(Ticket $ticket){
+
+
+        $dto = new derivarDTO();
+        $dto->setId($ticket->getId());
+        $dto->setClasificacion($ticket->getLastHistorialClasificacion()->getClasificacion()->getId());
+        $dto->setDescripcion($ticket->getDescripcion());
+        $dto->setEstado($ticket->getLastHistorialEstados()->getEstadoTicket()->getDescripcion());
+        //BUSCAMOS EL ESTADO ABIERTO DERIVADO
+        $repository = $this->getDoctrine()->getRepository(EstadoTicket::class);
+        $dto->setNuevoE($repository->find(2)->getDescripcion());
+        $dto->setGrupo($ticket->getLastHistorialEstados()->getGrupoResolucion()->getId());
+
+        return $dto;
+
+
+    }
+
+
     /** ################################################################################################################## */
     /*---------------FUNCIONES AUXILIARES PARA EL PROCESAMIENTO DE FORMULARIOS----------------------------------------------*
     /** ################################################################################################################## */
@@ -711,10 +912,10 @@ class TicketController extends AbstractController
 
     }
 
-    public function cerrarHistorialesTicket( Ticket $ticket, $user, $obs){
+    public function cerrarHistorialesTicket( Ticket $ticket, $user){
         /* Buscamos el ultimo historial de estados y lo cerramos*/
         $historialEstados = $ticket->getHistorialEstados()->last();
-        $historialEstados->cerrar($obs);
+        $historialEstados->cerrar();
 
         /* buscamos el nuevo estado cerrado para el nuevo historial de estados*/
         $repository = $this->getDoctrine()->getRepository(EstadoTicket::class);
@@ -734,7 +935,7 @@ class TicketController extends AbstractController
         $historialNuevo->setEstadoTicket($estadoTicket);
         $historialNuevo->setItemClasificacion($historialclasificacion);
         $historialNuevo->setGrupoResolucion($mesaAyuda);
-        $historialNuevo->cerrar($obs);
+        $historialNuevo->cerrar();
 
         /* agregamos el nuevo historial al ticket*/
         $ticket->addHistorialEstado($historialNuevo);
@@ -793,20 +994,6 @@ class TicketController extends AbstractController
 
 
 
-    public function DerivarTicket($id){
-        if ($this->getUser()!= null) {
-            $titulo = 'Derivar Ticket';
-            $load = 'onload=sacar()';
-            return $this->render('MesaDeAyuda/CU04DerivarTicket.html.twig', [
-                'titulo' => $titulo,
-                'load' => $load,
-                'idTicket'=>$id
-            ]);
-
-        }
-        else return $this->redirectToRoute('index');
-
-    }
 
     public function CerrarTicket($id){
         if ($this->getUser()!= null) {

@@ -259,8 +259,18 @@ class Ticket
         return $this->HistorialEstados->last();
     }
 
+    public function poseeIntervencionAbierta(GrupoResolucion $grupoResolucion){
+        foreach ($this->Intervenciones as $intevencion){
+            if($intevencion->getGrupoResolucion()== $grupoResolucion) return true;
+        }
+        return false;
+    }
 
-
+    public function recuperarIntervencion(GrupoResolucion $grupoResolucion){
+        foreach ($this->Intervenciones as $intevencion){
+            if($intevencion->getGrupoResolucion()== $grupoResolucion) return $intevencion;
+        }
+    }
 
 
 }
