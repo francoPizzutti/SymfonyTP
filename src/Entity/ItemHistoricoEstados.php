@@ -49,6 +49,16 @@ class ItemHistoricoEstados
      */
     private $ticket;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\GrupoResolucion")
+     */
+    private $Grupo_De_Resolucion;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\ItemHistoricoClasificacion")
+     */
+    private $ItemClasificacion;
+
 
 
     public function getId(): ?int
@@ -61,6 +71,14 @@ class ItemHistoricoEstados
     public function getFechaDesde(): ?\DateTimeInterface
     {
         return $this->Fecha_Desde;
+    }
+    public function getFechaDesdeString(): ?string
+    {
+        return $this->Fecha_Desde->format('Y-m-d');
+    }
+    public function getHoraDesdeString(): ?string
+    {
+        return $this->Fecha_Desde->format('H:i:s');
     }
 
     public function setFechaDesde(?\DateTimeInterface $Fecha_Desde): self
@@ -126,8 +144,9 @@ class ItemHistoricoEstados
         $this->Fecha_Desde=new DateTime();
 
     }
-    public function cerrar(){
+    public function cerrar($obs){
         $this->Fecha_Hasta=new DateTime();
+        $this->Observacion = $obs;
     }
 
     public function getTicket(): ?Ticket
@@ -138,6 +157,30 @@ class ItemHistoricoEstados
     public function setTicket(?Ticket $ticket): self
     {
         $this->ticket = $ticket;
+
+        return $this;
+    }
+
+    public function getGrupoResolucion(): ?GrupoResolucion
+    {
+        return $this->Grupo_De_Resolucion;
+    }
+
+    public function setGrupoResolucion(?GrupoResolucion $Grupo_De_Resolucion): self
+    {
+        $this->Grupo_De_Resolucion = $Grupo_De_Resolucion;
+
+        return $this;
+    }
+
+    public function getItemClasificacion(): ?ItemHistoricoClasificacion
+    {
+        return $this->ItemClasificacion;
+    }
+
+    public function setItemClasificacion(?ItemHistoricoClasificacion $ItemClasificacion): self
+    {
+        $this->ItemClasificacion = $ItemClasificacion;
 
         return $this;
     }

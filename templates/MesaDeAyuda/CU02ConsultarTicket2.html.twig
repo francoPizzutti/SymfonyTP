@@ -68,7 +68,7 @@
                     </div>
                     <div class="content">
                         <div class="text">TICKETS</div>
-                        <div class="number">1542</div>
+                        <div class="number">{{ stat[0] }}</div>
                     </div>
                 </div>
 
@@ -80,7 +80,7 @@
                     </div>
                     <div class="content">
                         <div class="text">LEGAJOS</div>
-                        <div class="number">92</div>
+                        <div class="number">{{ stat[1] }}</div>
                     </div>
                 </div>
             </div>
@@ -91,7 +91,7 @@
                     </div>
                     <div class="content">
                         <div class="text">A LA ESPERA OK</div>
-                        <div class="number">154</div>
+                        <div class="number">{{ stat[2] }}</div>
                     </div>
                 </div>
             </div>
@@ -104,7 +104,7 @@
                     </div>
                     <div class="content">
                         <div class="text">CERRADOS</div>
-                        <div class="number">212</div>
+                        <div class="number">{{ stat[3] }}</div>
 
                     </div>
                 </div>
@@ -234,7 +234,7 @@
                                     <div class="form-group form-float">
                                         <div id="inp1" class="form-line" >
                                             <label class="form-label" style=" top: -10px; font-size: 12px;">Número de Ticket</label>
-                                            <input type="text" class="form-control" readonly value="232434" disabled>
+                                            <input type="text" class="form-control" readonly value="{{ requestflash.get(0) }}" disabled>
 
                                         </div>
                                     </div>
@@ -244,7 +244,7 @@
                                     <div class="form-group form-float">
                                         <div id="inp2" class="form-line">
                                             <label class="form-label" style=" top: -10px; font-size: 12px;">Número de Legajo</label>
-                                            <input type="text" class="form-control" readonly value="2434" disabled>
+                                            <input type="text" class="form-control" readonly value="{{ requestflash.get(1) }}" disabled>
 
 
                                         </div>
@@ -254,7 +254,7 @@
                                     <div class="form-group form-float">
                                         <div id="inp7" class="form-line">
                                             <label class="form-label" style=" top: -10px; font-size: 12px;">Estado</label>
-                                            <input type="text" class="form-control" readonly value="abierto sin derivar" disabled>
+                                            <input type="text" class="form-control" readonly value="{{ requestflash.get(2) }}" disabled>
 
                                         </div>
                                     </div>
@@ -268,7 +268,7 @@
                                     <div class="form-group form-float">
                                         <div id="inp3" class="form-line">
                                             <label class="form-label" style=" top: -10px; font-size: 12px;">Clasificación de Ticket</label>
-                                            <input type="text" class="form-control" disabled readonly value="Problema en el funcionamiento del Sistema Operativo de PC">
+                                            <input type="text" class="form-control" disabled readonly value="{{ requestflash.get(3) }}">
 
                                         </div>
                                     </div>
@@ -277,7 +277,7 @@
                                     <div class="form-group form-float">
                                         <div id="inp4" class="form-line">
                                             <label class="form-label" style=" top: -10px; font-size: 12px;">Grupo de Resolución</label>
-                                            <input type="text" class="form-control" disabled readonly value="Administrador de base de datos">
+                                            <input type="text" class="form-control" disabled readonly value="{{ requestflash.get(4) }}">
 
                                         </div>
                                     </div>
@@ -287,7 +287,7 @@
                                         <div id="inp5" class="form-line">
                                             <div class="demo-masked-input">
                                                 <label class="form-label" style=" top: -10px; font-size: 12px;">Fecha de Creación</label>
-                                                <input type="text" class="form-control" disabled readonly value="30/07/2016">
+                                                <input type="text" class="form-control" disabled readonly value="{{ requestflash.get(5) }}">
 
                                             </div>
                                         </div>
@@ -309,7 +309,7 @@
                                         <div id="inp6" class="form-line">
 
                                             <label class="form-label" style=" top: -10px; font-size: 12px;">Fecha de último cambio de estado</label>
-                                            <input type="text" class="form-control" readonly value="30/07/2016" disabled>
+                                            <input type="text" class="form-control" readonly value="{{ requestflash.get(6) }}" disabled>
 
 
                                         </div>
@@ -379,16 +379,16 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {% for resultado in result %}
-                            <tr onclick="seleccionar({{ resultado.id }})">
-                                <td >{{ resultado.id  }}</td>
-                                <td>{{ resultado.empleado.legajo }}</td>
-                                <td>{{ resultado.fechastring }}</td>
-                                <td>{{ resultado.user.empleado.nombre }} {{ resultado.user.empleado.apellido }}</td>
-                                <td>{{ resultado.lasthistorialclasificacion.clasificacion.nombre }}</td>
-                                <td>Abierto sin derivar</td>
-                                <td>10/11/2017</td>
-                                <td>Administrador de base de datos</td>
+                            {% for resultDTO in resultado %}
+                            <tr onclick="seleccionar({{ resultDTO.id  }})">
+                                <td >{{ resultDTO.id  }}</td>
+                                <td>{{ resultDTO.legajo }}</td>
+                                <td>{{ resultDTO.FechaApertura }}</td>
+                                <td>{{ resultDTO.usuario }}</td>
+                                <td>{{ resultDTO.clasificacion }}</td>
+                                <td>{{ resultDTO.estado }}</td>
+                                <td>{{ resultDTO.FechaUltimoCambio }}</td>
+                                <td>{{ resultDTO.GrupoResolucion }}</td>
 
                             </tr>
                             {% endfor %}
