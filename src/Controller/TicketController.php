@@ -150,7 +150,7 @@ class TicketController extends AbstractController
             $clasificaciones = $this->clasificacionesOrdenadas();
 
             //LA LISTA DE GRUPOS DE RESOLUCION
-            $grupos = $this->gruposOrdenados();
+            $grupos = $this->gruposOrdenadosSM();
 
         $dto = $this->buildDerivarDTO($ticket);
         $requestflash->set("");
@@ -316,12 +316,15 @@ class TicketController extends AbstractController
 
            $load = 'successNotify("El Ticket fue creado con éxito  con el Nro: '.$NTicket.', Nro de Legajo: '.$Nlegajo.'")';
            $requestflash->set($NTicket);
+           $grupos = $this->gruposOrdenadosSM();
 
 
            return $this->render('MesaDeAyuda/CU01registrarticket2.html.twig', ['load' => $load,
                'titulo' => 'Acciones Requeridas',
                'error' =>$error,
-               'requestflash' => $requestflash]);
+               'active' => 1,
+               'requestflash' => $requestflash,
+               'grupos' => $grupos]);
        }
 
 
@@ -371,7 +374,7 @@ class TicketController extends AbstractController
                 /* #END# buscar usuario*/
 
                 $this->cerrarIntervencionMesa($ticket, $Nobservacion, $usuario);
-                $this->cerrarHistorialesTicket($ticket, $usuario, $Nobservacion);
+                $this->cerrarHistorialesTicket($ticket, $usuario);
 
                 $entityManager->persist($ticket);
 
@@ -380,13 +383,14 @@ class TicketController extends AbstractController
                 $load = 'success("El Ticket fue cerrado correctamente")';
                 $requestflash->set($NTicket);
                 $requestflash->set($Nobservacion);
+                $grupos = $this->gruposOrdenadosSM();
 
 
                 return $this->render('MesaDeAyuda/CU01registrarticket2.html.twig', ['load' => $load,
                     'titulo' => 'Ticket Cerrado',
-
+                    'active' => 1,
+                    'grupos' => $grupos,
                     'error' =>$error,
-
                     'requestflash' => $requestflash]);
 
             }
@@ -523,7 +527,7 @@ class TicketController extends AbstractController
                 $clasificaciones = $this->clasificacionesOrdenadas();
 
                 //LA LISTA DE GRUPOS DE RESOLUCION
-                $grupos = $this->gruposOrdenados();
+                $grupos = $this->gruposOrdenadosSM();
 
                 /* END VISTA*/
 
@@ -546,53 +550,12 @@ class TicketController extends AbstractController
                 $repository = $this->getDoctrine()->getRepository(GrupoResolucion::class);
                 $gr = $repository->find($idgrupoResolucion);
 
-                //BUSCAMOS EL ESTADO ABIERTO DERIVADO
-                $repository = $this->getDoctrine()->getRepository(EstadoTicket::class);
-                $et = $repository->find(2);
+                //Derivamos el ticket
+                $this->derivar($ticket, $observaciones, $gr);
 
-                //CERRAMOS EL ULTIMO HISTORIAL DE ESTADOS Y LO CERRAMOS
-                $ticket->getLastHistorialEstados()->cerrar($observaciones);
-                $he = new ItemHistoricoEstados();
-                $he->setUser($this->getUser());
-                $he->setObservacion($observaciones);
-                $he->setItemClasificacion($histc);
-                $he->setGrupoResolucion($gr);
-                $he->setEstadoTicket($et);
-
-                //AGREGAMOS EL NUEVO ITEM HISTORICO DE ESTADOS AL TICKET
-                $ticket->addHistorialEstado($he);
-
-                //EN EL CASO DE QUE EL TICKET POSEA INTERVENCIONES ABIERTAS PARA EL TICKET
-                if($ticket->poseeIntervencionAbierta($gr)){
-                    $inT = $ticket->recuperarIntervencion($gr);
-                    $inT->setObservaciones($observaciones);
-                    $hi = $inT->getHistorialIntervencion()->last();
-                    $hi->cerrar();
-
-
-
-                }else{
-                    $inT = new Intervencion();
-                    $inT->setGrupoResolucion($gr);
-                    $inT->setObservaciones($observaciones);
-                    $ticket->addIntervencione($inT);
-
-                }
-                //Buscamos el estado de la intervencion asignada
-                $repository = $this->getDoctrine()->getRepository(EstadoIntervencion::class);
-                $estIntervencion = $repository->find(1);
-
-                //Creamos el nuevo item historico de intervencion y se lo asociamos a la intervencion
-                $nuevohi = new ItemHistoricoIntervencion();
-                $nuevohi->setUser($this->getUser());
-                $nuevohi->setEstadoIntervencion($estIntervencion);
-                $inT->addHistorialIntervencion($nuevohi);
-
-
+                //Esto es para voolver a la vista con los nuevos valores del ticket
                 $dto = $this->buildDerivarDTO($ticket);
-                $entityManager = $this->getDoctrine()->getManager();
-                $entityManager->persist($ticket);
-                $entityManager->flush();
+
 
                 $load = 'onload=success("el ticket se derivo correctamente")';
 
@@ -611,7 +574,7 @@ class TicketController extends AbstractController
                 $clasificaciones = $this->clasificacionesOrdenadas();
 
                 //LA LISTA DE GRUPOS DE RESOLUCION
-                $grupos = $this->gruposOrdenados();
+                $grupos = $this->gruposOrdenadosSM();
 
                 $dto = $this->buildDerivarDTO($ticket);
 
@@ -630,9 +593,43 @@ class TicketController extends AbstractController
             }
         }
 
-        else{
-            $this->redirectToRoute('home');
-        }
+        else return $this->redirectToRoute('home');
+
+
+    }
+
+    //VAMOS A DERIVAR UN TICKET RECIEN CREADO QUE SE ENCUENTRA EN MESA DE AYUDA
+    public function CU01DerivarMesa(Request $request, error $error, requestflash $requestflash){
+        if ($this->getUser()!= null && $this->getUser()->getNivel()==0) {
+            //Recuperamos los parametros enviados en el objeto request
+            $Nticket = $request->request->get('ticket');
+            $Ngrupo = $request->request->get('grupo');
+
+            //BUSCAMOS EL TICKET RECIBIDO EN EL REQUEST
+            $repository = $this->getDoctrine()->getRepository(Ticket::class);
+            $ticket = $repository->find($Nticket);
+
+            //BUSCAMOS EL GRUPO DE RESOLUCION QUE RECIBIRA EL TICKET
+            $repository = $this->getDoctrine()->getRepository(GrupoResolucion::class);
+            $gr = $repository->find($Ngrupo);
+
+            $this->derivar($ticket, "El ticket fue derivado inmediatamente", $gr);
+
+            $load = 'success("El Ticket fue derivado correctamente")';
+            $requestflash->set($Nticket);
+            $requestflash->set("");
+            $grupos = $this->gruposOrdenadosSM();
+
+
+            return $this->render('MesaDeAyuda/CU01registrarticket2.html.twig', ['load' => $load,
+                'titulo' => 'Ticket Derivado',
+                'grupos' => $grupos,
+                'error' =>$error,
+                'active' => 2,
+                'requestflash' => $requestflash]);
+
+
+        }else return $this->redirectToRoute('home');
 
     }
 
@@ -760,6 +757,27 @@ class TicketController extends AbstractController
             $grupoDTO->setId($item->getId());
             $grupoDTO->setNombre($item->getNombre());
             array_push($grupos, $grupoDTO);
+
+        }
+        return $grupos;
+
+    }
+
+    /* TRAE TODOS LOS GRUPOS DE RESOLUCION ORDENADOS ALFABETICAMENTE POR NOMBRE */
+    public function gruposOrdenadosSM(){
+        $repository = $this->getDoctrine()->getRepository(GrupoResolucion::class);
+        $gruposO = $repository->findBy(
+            [],
+            ['Nombre' => 'ASC']
+        );
+        $grupos = array();
+        foreach ($gruposO as $item){
+            $grupoDTO = new gruposDTO();
+            if($item->getId()!=1) {
+                $grupoDTO->setId($item->getId());
+                $grupoDTO->setNombre($item->getNombre());
+                array_push($grupos, $grupoDTO);
+            }
 
         }
         return $grupos;
@@ -985,6 +1003,58 @@ class TicketController extends AbstractController
 
             return $intv;
         }
+    }
+
+    public function derivar(Ticket $ticket, $observaciones, $gr){
+
+
+        //BUSCAMOS EL ESTADO ABIERTO DERIVADO
+        $repository = $this->getDoctrine()->getRepository(EstadoTicket::class);
+        $et = $repository->find(2);
+
+        //CERRAMOS EL ULTIMO HISTORIAL DE ESTADOS Y CREAMOS UNO NUEVO
+        $ticket->getLastHistorialEstados()->cerrar($observaciones);
+        $he = new ItemHistoricoEstados();
+        $he->setUser($this->getUser());
+        $he->setObservacion($observaciones);
+        $he->setItemClasificacion($ticket->getLastHistorialClasificacion());
+        $he->setGrupoResolucion($gr);
+        $he->setEstadoTicket($et);
+
+        //AGREGAMOS EL NUEVO ITEM HISTORICO DE ESTADOS AL TICKET
+        $ticket->addHistorialEstado($he);
+
+        //EN EL CASO DE QUE EL TICKET POSEA INTERVENCIONES ABIERTAS PARA EL TICKET
+        if($ticket->poseeIntervencionAbierta($gr)){
+            $inT = $ticket->recuperarIntervencion($gr);
+            $inT->setObservaciones($observaciones);
+            $hi = $inT->getHistorialIntervencion()->last();
+            $hi->cerrar();
+
+
+
+        }else{
+            //si no posee intervenciones abiertas
+            $inT = new Intervencion();
+            $inT->setGrupoResolucion($gr);
+            $inT->setObservaciones($observaciones);
+            $ticket->addIntervencione($inT);
+
+        }
+        //Buscamos el estado de la intervencion asignada
+        $repository = $this->getDoctrine()->getRepository(EstadoIntervencion::class);
+        $estIntervencion = $repository->find(1);
+
+        //Creamos el nuevo item historico de intervencion y se lo asociamos a la intervencion
+        $nuevohi = new ItemHistoricoIntervencion();
+        $nuevohi->setUser($this->getUser());
+        $nuevohi->setEstadoIntervencion($estIntervencion);
+        $inT->addHistorialIntervencion($nuevohi);
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($ticket);
+        $entityManager->flush();
+        return;
+
     }
 
 

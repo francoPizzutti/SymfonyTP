@@ -60,6 +60,7 @@
                     <div class="body">
                         <!-- Nav tabs -->
                         <ul class="nav nav-tabs" role="tablist">
+                            {% if active == 1 %}
                             <li role="presentation" class="active">
                                 <a href="#home_with_icon_title" data-toggle="tab">
                                     <i class="material-icons">clear</i> CERRAR
@@ -70,6 +71,18 @@
                                     <i class="material-icons">near_me</i> DERIVAR
                                 </a>
                             </li>
+                            {% else %}
+                            <li role="presentation" >
+                                <a href="#home_with_icon_title" data-toggle="tab">
+                                    <i class="material-icons">clear</i> CERRAR
+                                </a>
+                            </li>
+                            <li role="presentation" class="active">
+                                <a href="#profile_with_icon_title" data-toggle="tab">
+                                    <i class="material-icons">near_me</i> DERIVAR
+                                </a>
+                            </li>
+                            {% endif %}
 
                         </ul>
 
@@ -131,34 +144,22 @@
                             <div role="tabpanel" class="tab-pane fade" id="profile_with_icon_title">
 
                                 <!-- GRUPO DE RESOLUCION-->
+                                <form id="formDerivar" method="post" action="{{ path('CU01DerivarMesa') }}">
+                                    <input type="hidden" name="ticket" value="{{ requestflash.get(0) }}">
 
                                 <div class="row clearfix">
                                     <div class="col-sm-12">
 
-                                                <select class="form-control show-tick" id="grupo_resolucion">
-                                                    <option>Todos</option>
-                                                    <option>Mesa de ayuda</option>
-                                                    <option>Unidades de soporte</option>
-                                                    <option>Servicio tecnico</option>
-                                                    <option>Administrador de base de datos</option>
-                                                    <option>Administrador SUSE linux</option>
-                                                    <option>Administrador proxy y correo electronico</option>
-                                                    <option>Administrador Debian</option>
-                                                    <option>Redes LAN</option>
-                                                    <option>Comunicaciones</option>
-                                                    <option>Desarrollo sistema comercial</option>
-                                                    <option>Desarrollo sistema RRHH</option>
-                                                    <option>Desarrollo sistema de reclamos</option>
+                                                <select class="form-control show-tick" id="grupo_resolucion" name="grupo">
+                                                   {% for grupo in grupos %}
+                                                    <option value="{{ grupo.Id }}">{{ grupo.Nombre }}</option>
+                                                    {% endfor %}
                                                 </select>
 
                                     </div>
 
 
                                 </div>
-
-
-
-
 
                                 <!-- BOTONES-->
                                 <div class="row clearfix">
@@ -168,6 +169,7 @@
                                     </div>
                                     </div>
                                 </div>
+                                </form>
 
 
 
@@ -186,6 +188,7 @@
         <!-- CON OPCIONES-->
         <div id="modal-options" class="iziModal" data-izimodal-group="group1" data-izimodal-loop="" data-izimodal-title="¿ESTA SEGURO DE CERRAR EL TICKET?" data-izimodal-subtitle="Cerrar solo si ha confirmado que esta resuelto el problema">
 
+
             <!-- Basic Card -->
             <div class="row clearfix">
 
@@ -196,7 +199,28 @@
 
                         <div class="button-demo">
                             <button type="button" class="btn bg-grey waves-effect" onclick="cerrarIzimodal()">CANCELAR</button>
-                            <button type="button" class="btn bg-red waves-effect" onclick="submit()">ACEPTAR</button>
+                            <button type="button" class="btn bg-red waves-effect" onclick="submitCerrar()">ACEPTAR</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- #END# Basic Card -->
+
+        <!-- modal derivar-->
+        <div id="modal-derivar" class="iziModal" data-izimodal-group="group1" data-izimodal-loop="" data-izimodal-title="¿ESTA SEGURO DE DERIVAR EL TICKET?" data-izimodal-subtitle="Derivar a un grupo de resolución acorde al problema">
+            <!-- Basic Card -->
+            <div class="row clearfix">
+
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+
+
+                    <div class="body align-right" style="padding: 20px">
+
+                        <div class="button-demo">
+                            <button type="button" class="btn bg-grey waves-effect" onclick="cerrarIziDerivar()">CANCELAR</button>
+                            <button type="button" class="btn bg-red waves-effect" onclick="submitDerivar()">ACEPTAR</button>
                         </div>
                     </div>
                 </div>
@@ -295,6 +319,35 @@
 </script>
 
     <script>
+        //options
+        $(document).on('click', '#derivar', function(event) {
+            event.preventDefault();
+
+
+                $('#modal-derivar').iziModal({
+                    headerColor: '#F44336',
+                    width: '50%', //横幅
+                    overlayColor: 'rgba(0, 0, 0, 0.5)', //モーダルの背景色
+                    fullscreen: true, //全画面表示
+                    transitionIn: 'fadeInUp', //表示される時のアニメーション
+                    transitionOut: 'fadeOutDown' //非表示になる時のアニメーション
+                });
+                $('#modal-derivar').iziModal('open');
+
+
+
+
+
+        });
+        function cerrarIziDerivar(){
+            $('#modal-derivar').iziModal('close');
+        }
+
+
+
+    </script>
+
+    <script>
         function success(string) {
             document.getElementById("cerrar").setAttribute('disabled', 'disable');
             document.getElementById("derivar").setAttribute('disabled', 'disable');
@@ -302,9 +355,18 @@
             successNotify(string);
 
         }
-        function submit() {
+        function submitCerrar() {
+            $("#formDerivar").submit(function(e){
+                e.preventDefault();
+            });
             document.getElementById('formulario').submit();
 
+        }
+        function submitDerivar() {
+            $("#formulario").submit(function(e){
+                e.preventDefault();
+            });
+            document.getElementById('formDerivar').submit();
         }
     </script>
 

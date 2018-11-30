@@ -40,8 +40,15 @@ CU01ProcesarTicket:
               methods: [POST]
 
 CU01CerrarMesa:
-              path:     /CU01AccionesRqueridas
+              path:     /CU01AccionesRequeridasCerrar
               controller: App\Controller\TicketController::CU01CerrarMesa
+              methods: [POST]
+
+
+CU01DerivarMesa:
+              path:     /CU01AccionesRequeridasDerivar
+              controller: App\Controller\TicketController::CU01DerivarMesa
+              methods: [POST]
 
 CU02ConsultarTicket:
               path:     /CU02ConsultarTicket
@@ -64,6 +71,7 @@ DetalleTicket:
 CU04DerivarTicket:
               path:     /CU04DerivarTicket
               controller: App\Controller\TicketController::VistaDerivarTicket
+              methods: [POST]
 
 CU04ProcesarDerivar:
               path:     /CU04ProcesarDerivar
