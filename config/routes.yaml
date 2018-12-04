@@ -108,7 +108,19 @@ CU24AgruparPorClasificacionTicket:
 
 ConsultarIntervenciones:
     path:       /CU07ConsultarIntervenciones
-    controller: App\Controller\HomeController::index
+    controller: App\Controller\IntervencionController::VistaConsulta
+
+ProcesaConsultaIntervenciones:
+    path:       /CU07ProcesaIntervenciones
+    controller: App\Controller\IntervencionController::ProcesarConsulta
+
+ActualizarIntervencion:
+    path:       /CU08ActualizarIntervencion/{id}
+    controller: App\Controller\IntervencionController::VistaActualizar
+
+ProcesarActualizacion:
+    path:       /CU08ProcesarActualizacion
+    controller: App\Controller\IntervencionController::Actualizar
 
 RegistrarClasificacionDeTickets:
     path:      /CU10RegistrarClasificacionDeTickets
@@ -118,3 +130,5 @@ RegistrarClasificacionDeTickets:
 BuscarClasifTicketsParte1:
     path:       /CU11BuscarClasifTicketsParte1
     controller: App\Controller\HomeController::index
+
+
