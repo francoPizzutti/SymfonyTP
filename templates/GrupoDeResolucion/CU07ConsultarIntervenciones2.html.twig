@@ -1,7 +1,7 @@
-@extends('layoutConstantes.baseLayout')
+{% extends 'layout/baseLayout.html.twig' %}
 
 
-@section('header')
+{% block header %}
 
     <link href="{{ asset('plugins/bootstrap/css/bootstrap.min.css') }}">
 
@@ -22,14 +22,14 @@
     <!-- JQuery Nestable Css -->
     <link href="{{ asset('plugins/nestable/jquery-nestable.css') }}" rel="stylesheet" />
 
-@endsection
+{% endblock %}
 
 
-@section('menu')
-    @include('GrupoDeResolucion.menu.CU07menu')
-    @endsection
+{% block menu %}
+    {% include 'GrupoDeResolucion/menu/CU07menu.html.twig' %}
+{% endblock %}
 
-@section('content')
+{% block content %}
 
 
 <section class="content">
@@ -43,11 +43,11 @@
             <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box-4 hover-zoom-effect">
                     <div class="icon">
-                        <i class="material-icons col-pink">collections_bookmark</i>
+                        <i class="material-icons col-amber">collections_bookmark</i>
                     </div>
                     <div class="content">
                         <div class="text">TICKETS</div>
-                        <div class="number">1542</div>
+                        <div class="number">{{ stat[0] }}</div>
                     </div>
                 </div>
 
@@ -55,22 +55,22 @@
             <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box-4 hover-zoom-effect">
                     <div class="icon">
-                        <i class="material-icons col-blue">person</i>
+                        <i class="material-icons col-pink">person</i>
                     </div>
                     <div class="content">
                         <div class="text">LEGAJOS</div>
-                        <div class="number">92</div>
+                        <div class="number">{{ stat[1] }}</div>
                     </div>
                 </div>
             </div>
             <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box-4 hover-zoom-effect">
                     <div class="icon">
-                        <i class="material-icons col-light-blue">check_circle</i>
+                        <i class="material-icons col-light-blue">assignment</i>
                     </div>
                     <div class="content">
-                        <div class="text">A LA ESPERA OK</div>
-                        <div class="number">154</div>
+                        <div class="text">ASIGNADAS</div>
+                        <div class="number">{{ stat[2] }}</div>
                     </div>
                 </div>
             </div>
@@ -82,8 +82,8 @@
 
                     </div>
                     <div class="content">
-                        <div class="text">CERRADOS</div>
-                        <div class="number">212</div>
+                        <div class="text">CERRADAS</div>
+                        <div class="number">{{ stat[3] }}</div>
 
                     </div>
                 </div>
@@ -170,6 +170,7 @@
                                 </thead>
 
                                 <tbody>
+                                {% for dto in resultado %}
                                 <tr>
                                     <td>
                                         <div class="dropdown">
@@ -177,8 +178,8 @@
                                                 <i class="material-icons pull-right">more_vert</i>
                                             </a>
                                             <ul class="dropdown-menu pull-right">
-                                                <li><a href="{{ url('/CU08ActualizarIntervencion/277') }}">Actualizar estado de la Intervención</a></li>
-                                                <li><a href="{{ url('CU09ModificarComentarios/277') }}">Modificar Comentario</a></li>
+                                                <li><a href="/CU08ActualizarIntervencion/{{ dto.Id }}">Actualizar estado de la Intervención</a></li>
+                                                <li><a href="#">Modificar Comentario</a></li>
 
                                             </ul>
                                         </div>
@@ -188,42 +189,39 @@
 
                                                 <li class="dd-item " data-id="2">
                                                     <div class="dd-handle" >
-                                                        <b class="col-pink">NÚMERO DE TICKET: </b><b class="col-grey">7777</b>
+                                                        <b class="col-pink">NÚMERO DE TICKET: </b><b class="col-grey">{{ dto.Id }}</b>
 
                                                     </div>
                                                     <ol class="dd-list">
                                                         <li class="dd-item" data-id="3">
-                                                            <div class="dd-handle" ><b>Número de Legajo: </b><b class="col-grey">34543</b></div>
+                                                            <div class="dd-handle" ><b>Número de Legajo: </b><b class="col-grey">{{ dto.Legajo }}</b></div>
                                                         </li>
                                                         <li class="dd-item" data-id="4">
-                                                            <div class="dd-handle" ><b>Clasificación Actual del Ticket: </b><b class="col-grey">Solicitud de usuario para sistemas informaticos que utiliza la empresa</b></div>
+                                                            <div class="dd-handle" ><b>Clasificación Actual del Ticket: </b><b class="col-grey">{{ dto.Clasificacion }}</b></div>
                                                         </li>
                                                         <li class="dd-item" data-id="5">
-                                                            <div class="dd-handle" ><b>Estado del Ticket: </b><b class="col-grey">Abierto Derivado</b></div>
+                                                            <div class="dd-handle" ><b>Estado del Ticket: </b><b class="col-grey">{{ dto.Estado }}</b></div>
                                                         </li>
                                                         <li class="dd-item" data-id="6">
-                                                            <div class="dd-handle" ><b>Fecha de Apertura: </b><b class="col-grey">11-04-2018</b></div>
+                                                            <div class="dd-handle" ><b>Fecha de Apertura: </b><b class="col-grey">{{ dto.FechaApertura }}</b></div>
                                                         </li>
                                                         <li class="dd-item" data-id="7">
-                                                            <div class="dd-handle" >Estado de la Intervención: </b><b class="col-grey">Atendida</b></div>
+                                                            <div class="dd-handle" >Estado de la Intervención: </b><b class="col-grey">{{ dto.EstIntervencion }}</b></div>
                                                         </li>
                                                         <li class="dd-item" data-id="7">
-                                                            <div class="dd-handle" >Fecha de asignación de la Intervención: </b><b class="col-grey">22-05-2018</b></div>
+                                                            <div class="dd-handle" >Fecha de asignación de la Intervención: </b><b class="col-grey">{{ dto.FechaAsig }}</b></div>
                                                         </li>
                                                         <li class="dd-item" data-id="7">
-                                                            <div class="dd-handle" >Grupo de Resolución: </b><b class="col-grey">Servicio técnico</b></div>
+                                                            <div class="dd-handle" >Grupo de Resolución: </b><b class="col-grey">{{ dto.GrupoResolucion }}</b></div>
                                                         </li>
                                                         <li class="dd-item" data-id="7">
-                                                            <div class="dd-handle" >Observaciones: </b></div>
+                                                            <div class="dd-handle" ><b>Observaciones: </b></div>
                                                             <ol class="dd-list">
                                                                 <li>
                                                                     <div class="card">
                                                                         <div class="body" style="background-color: #F9F9F9">
                                                                             <p style="color: #A7A79E">
-                                                                                Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget
-
-                                                                                Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc.
-                                                                            </p>
+                                                                                {{ dto.Observacion }}</p>
                                                                         </div>
                                                                     </div>
                                                                 </li>
@@ -240,278 +238,7 @@
                                         </div>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>
-                                        <div class="dropdown">
-                                            <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                                <i class="material-icons pull-right">more_vert</i>
-                                            </a>
-                                            <ul class="dropdown-menu pull-right">
-                                                <li><a href="{{ url('/CU08ActualizarIntervencion/267') }}">Actualizar estado de la Intervención</a></li>
-                                                <li><a href="{{ url('CU09ModificarComentarios/267') }}">Modificar Comentario</a></li>
-
-                                            </ul>
-                                        </div>
-                                        <div class="dd">
-                                            <ol class="dd-list">
-
-                                                <li class="dd-item " data-id="2">
-                                                    <div class="dd-handle" >
-                                                        <b class="col-pink">NÚMERO DE TICKET: </b><b class="col-grey">222333</b>
-                                                    </div>
-                                                    <ol class="dd-list">
-                                                        <li class="dd-item" data-id="3">
-                                                            <div class="dd-handle" ><b>Número de Legajo: </b><b class="col-grey">34543</b></div>
-                                                        </li>
-                                                        <li class="dd-item" data-id="4">
-                                                            <div class="dd-handle" ><b>Clasificación Actual del Ticket: </b><b class="col-grey">Solicitud de usuario para sistemas informaticos que utiliza la empresa</b></div>
-                                                        </li>
-                                                        <li class="dd-item" data-id="5">
-                                                            <div class="dd-handle" ><b>Estado del Ticket: </b><b class="col-grey">Abierto Derivado</b></div>
-                                                        </li>
-                                                        <li class="dd-item" data-id="6">
-                                                            <div class="dd-handle" ><b>Fecha de Apertura: </b><b class="col-grey">11-04-2018</b></div>
-                                                        </li>
-                                                        <li class="dd-item" data-id="7">
-                                                            <div class="dd-handle" >Estado de la Intervención: </b><b class="col-grey">Atendida</b></div>
-                                                        </li>
-                                                        <li class="dd-item" data-id="7">
-                                                            <div class="dd-handle" >Fecha de asignación de la Intervención: </b><b class="col-grey">22-05-2018</b></div>
-                                                        </li>
-                                                        <li class="dd-item" data-id="7">
-                                                            <div class="dd-handle" >Grupo de Resolución: </b><b class="col-grey">Servicio técnico</b></div>
-                                                        </li>
-                                                        <li class="dd-item" data-id="7">
-                                                            <div class="dd-handle" >Observaciones: </b></div>
-                                                            <ol class="dd-list">
-                                                                <li>
-                                                                    <div class="card">
-                                                                        <div class="body" style="background-color: #F9F9F9">
-                                                                            <p style="color: #A7A79E">
-                                                                                Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget
-
-                                                                                Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc.
-                                                                            </p>
-                                                                        </div>
-                                                                    </div>
-                                                                </li>
-                                                            </ol>
-                                                        </li>
-
-
-
-                                                    </ol>
-                                                </li>
-
-
-                                            </ol>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="dropdown">
-                                            <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                                <i class="material-icons pull-right">more_vert</i>
-                                            </a>
-                                            <ul class="dropdown-menu pull-right">
-                                                <li><a href="{{ url('/CU08ActualizarIntervencion/542') }}">Actualizar estado de la Intervención</a></li>
-                                                <li><a href="{{ url('CU09ModificarComentarios/542') }}">Modificar Comentario</a></li>
-
-                                            </ul>
-                                        </div>
-                                        <div class="dd">
-                                            <ol class="dd-list">
-
-                                                <li class="dd-item " data-id="2">
-                                                    <div class="dd-handle" >
-                                                        <b class="col-pink">NÚMERO DE TICKET: </b><b class="col-grey">222333</b>
-                                                    </div>
-                                                    <ol class="dd-list">
-                                                        <li class="dd-item" data-id="3">
-                                                            <div class="dd-handle" ><b>Número de Legajo: </b><b class="col-grey">34543</b></div>
-                                                        </li>
-                                                        <li class="dd-item" data-id="4">
-                                                            <div class="dd-handle" ><b>Clasificación Actual del Ticket: </b><b class="col-grey">Solicitud de usuario para sistemas informaticos que utiliza la empresa</b></div>
-                                                        </li>
-                                                        <li class="dd-item" data-id="5">
-                                                            <div class="dd-handle" ><b>Estado del Ticket: </b><b class="col-grey">Abierto Derivado</b></div>
-                                                        </li>
-                                                        <li class="dd-item" data-id="6">
-                                                            <div class="dd-handle" ><b>Fecha de Apertura: </b><b class="col-grey">11-04-2018</b></div>
-                                                        </li>
-                                                        <li class="dd-item" data-id="7">
-                                                            <div class="dd-handle" >Estado de la Intervención: </b><b class="col-grey">Atendida</b></div>
-                                                        </li>
-                                                        <li class="dd-item" data-id="7">
-                                                            <div class="dd-handle" >Fecha de asignación de la Intervención: </b><b class="col-grey">22-05-2018</b></div>
-                                                        </li>
-                                                        <li class="dd-item" data-id="7">
-                                                            <div class="dd-handle" >Grupo de Resolución: </b><b class="col-grey">Servicio técnico</b></div>
-                                                        </li>
-                                                        <li class="dd-item" data-id="7">
-                                                            <div class="dd-handle" >Observaciones: </b></div>
-                                                            <ol class="dd-list">
-                                                                <li>
-                                                                    <div class="card">
-                                                                        <div class="body" style="background-color: #F9F9F9">
-                                                                            <p style="color: #A7A79E">
-                                                                                Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget
-
-                                                                                Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc.
-                                                                            </p>
-                                                                        </div>
-                                                                    </div>
-                                                                </li>
-                                                            </ol>
-                                                        </li>
-
-
-
-                                                    </ol>
-                                                </li>
-
-
-                                            </ol>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="dropdown">
-                                            <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                                <i class="material-icons pull-right">more_vert</i>
-                                            </a>
-                                            <ul class="dropdown-menu pull-right">
-                                                <li><a href="{{ url('/CU08ActualizarIntervencion/673') }}">Actualizar estado de la Intervención</a></li>
-                                                <li><a href="{{ url('CU09ModificarComentarios/673') }}">Modificar Comentario</a></li>
-
-                                            </ul>
-                                        </div>
-                                        <div class="dd">
-                                            <ol class="dd-list">
-
-                                                <li class="dd-item " data-id="2">
-                                                    <div class="dd-handle" >
-                                                        <b class="col-pink">NÚMERO DE TICKET: </b><b class="col-grey">222333</b>
-                                                    </div>
-                                                    <ol class="dd-list">
-                                                        <li class="dd-item" data-id="3">
-                                                            <div class="dd-handle" ><b>Número de Legajo: </b><b class="col-grey">34543</b></div>
-                                                        </li>
-                                                        <li class="dd-item" data-id="4">
-                                                            <div class="dd-handle" ><b>Clasificación Actual del Ticket: </b><b class="col-grey">Solicitud de usuario para sistemas informaticos que utiliza la empresa</b></div>
-                                                        </li>
-                                                        <li class="dd-item" data-id="5">
-                                                            <div class="dd-handle" ><b>Estado del Ticket: </b><b class="col-grey">Abierto Derivado</b></div>
-                                                        </li>
-                                                        <li class="dd-item" data-id="6">
-                                                            <div class="dd-handle" ><b>Fecha de Apertura: </b><b class="col-grey">11-04-2018</b></div>
-                                                        </li>
-                                                        <li class="dd-item" data-id="7">
-                                                            <div class="dd-handle" >Estado de la Intervención: <b class="col-grey">Atendida</b></div>
-                                                        </li>
-                                                        <li class="dd-item" data-id="7">
-                                                            <div class="dd-handle" >Fecha de asignación de la Intervención: <b class="col-grey">22-05-2018</b></div>
-                                                        </li>
-                                                        <li class="dd-item" data-id="7">
-                                                            <div class="dd-handle" >Grupo de Resolución:<b class="col-grey">Servicio técnico</b></div>
-                                                        </li>
-                                                        <li class="dd-item" data-id="7">
-                                                            <div class="dd-handle" >Observaciones: </div>
-                                                            <ol class="dd-list">
-                                                                <li>
-                                                                    <div class="card">
-                                                                        <div class="body" style="background-color: #F9F9F9">
-                                                                            <p style="color: #A7A79E">
-                                                                                Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget
-
-                                                                                Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc.
-                                                                            </p>
-                                                                        </div>
-                                                                    </div>
-                                                                </li>
-                                                            </ol>
-                                                        </li>
-
-
-
-                                                    </ol>
-                                                </li>
-
-
-                                            </ol>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="dropdown">
-                                            <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                                <i class="material-icons pull-right">more_vert</i>
-                                            </a>
-                                            <ul class="dropdown-menu pull-right">
-                                                <li><a href="{{ url('/CU08ActualizarIntervencion/763') }}">Actualizar estado de la Intervención</a></li>
-                                                <li><a href="{{ url('/CU09ModificarComentarios/763') }}">Modificar Comentario</a></li>
-
-                                            </ul>
-                                        </div>
-                                        <div class="dd">
-                                            <ol class="dd-list">
-
-                                                <li class="dd-item " data-id="2">
-                                                    <div class="dd-handle" >
-                                                        <b class="col-pink">NÚMERO DE TICKET: </b><b class="col-grey">222333</b>
-                                                    </div>
-                                                    <ol class="dd-list">
-                                                        <li class="dd-item" data-id="3">
-                                                            <div class="dd-handle" ><b>Número de Legajo: </b><b class="col-grey">34543</b></div>
-                                                        </li>
-                                                        <li class="dd-item" data-id="4">
-                                                            <div class="dd-handle" ><b>Clasificación Actual del Ticket: </b><b class="col-grey">Solicitud de usuario para sistemas informaticos que utiliza la empresa</b></div>
-                                                        </li>
-                                                        <li class="dd-item" data-id="5">
-                                                            <div class="dd-handle" >Estado del Ticket:><b class="col-grey">Abierto Derivado</b></div>
-                                                        </li>
-                                                        <li class="dd-item" data-id="6">
-                                                            <div class="dd-handle" >Fecha de Apertura: <b class="col-grey">11-04-2018</b></div>
-                                                        </li>
-                                                        <li class="dd-item" data-id="7">
-                                                            <div class="dd-handle" >Estado de la Intervención: <b class="col-grey">Atendida</b></div>
-                                                        </li>
-                                                        <li class="dd-item" data-id="7">
-                                                            <div class="dd-handle" >Fecha de asignación de la Intervención: <b class="col-grey">22-05-2018</b></div>
-                                                        </li>
-                                                        <li class="dd-item" data-id="7">
-                                                            <div class="dd-handle" >Grupo de Resolución: <b class="col-grey">Servicio técnico</b></div>
-                                                        </li>
-                                                        <li class="dd-item" data-id="7">
-                                                            <div class="dd-handle" >Observaciones: </div>
-                                                            <ol class="dd-list">
-                                                                <li>
-                                                                    <div class="card">
-                                                                        <div class="body" style="background-color: #F9F9F9">
-                                                                            <p style="color: #A7A79E">
-                                                                                Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget
-
-                                                                                Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc.
-                                                                            </p>
-                                                                        </div>
-                                                                    </div>
-                                                                </li>
-                                                            </ol>
-                                                        </li>
-
-
-
-                                                    </ol>
-                                                </li>
-
-
-                                            </ol>
-                                        </div>
-                                    </td>
-                                </tr>
+                                {% endfor %}
                                 </tbody>
                             </table>
                         </div>
@@ -529,9 +256,9 @@
     </div>
 </section>
 
-@endsection
+{% endblock %}
 
-@section('footer')
+{% block footer %}
 
     <!-- Jquery Nestable -->
     <script src="{{ asset('plugins/nestable/jquery.nestable.js') }}"></script>
@@ -589,4 +316,4 @@
 </script>
 
 
-@endsection
+{% endblock %}

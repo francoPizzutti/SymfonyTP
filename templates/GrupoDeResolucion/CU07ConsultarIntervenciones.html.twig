@@ -1,21 +1,21 @@
-@extends('layoutConstantes.baseLayout')
+{% extends 'layout/baseLayout.html.twig' %}
 
-@section('header')
+{% block header %}
 
     <!-- Bootstrap Select Css -->
     <link href="{{ asset('plugins/bootstrap-select/css/bootstrap-select.css') }}" rel="stylesheet" />
 
     <!-- datedrooper -->
     <link href="{{ asset('plugins/datedrooper/datedropper.css') }}" rel="stylesheet" type="text/css" />
-    @endsection
+{% endblock %}
 
 
-@section('menu')
-    @include('GrupoDeResolucion.menu.CU07menu')
-    @endsection
+{% block menu %}
+    {% include 'GrupoDeResolucion/menu/CU07menu.html.twig' %}
+{% endblock %}
 
-@section('content')
 
+{% block content %}
 
 <section class="content">
     <div class="container-fluid">
@@ -48,19 +48,18 @@
                         </ul>
                     </div>
                     <div class="body">
-                        <form>
+                        <form method="post" action="{{ path('ProcesaConsultaIntervenciones') }}">
 
                             <!-- ESTADO-->
                             <div class="row clearfix">
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <div class="form-line">
-                                            <select class="form-control show-tick" title="Estado">
-                                                <option value="">Asignada</option>
-                                                <option>Trabajando</option>
-                                                <option>Esperando</option>
-                                                <option>Resuelta</option>
-                                                <option>Todos</option>
+                                            <select class="form-control show-tick" title="Estado" name="estado">
+                                                <option value="0">Todos</option>
+                                                {% for estado in estados %}
+                                                <option value="{{ estado.Id }}">{{ estado.Descripcion }}</option>
+                                                {% endfor %}
                                             </select>
                                         </div>
                                     </div>
@@ -73,7 +72,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group form-float">
                                         <div class="form-line">
-                                            <input type="text" class="form-control">
+                                            <input type="number" class="form-control" min="1" name="ticket">
                                             <label class="form-label">Número de Ticket</label>
                                         </div>
                                     </div>
@@ -82,7 +81,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group form-float">
                                         <div class="form-line">
-                                            <input type="text" class="form-control">
+                                            <input type="number" class="form-control" min="1" name="legajo">
                                             <label class="form-label">Número de Legajo</label>
                                         </div>
                                     </div>
@@ -95,7 +94,7 @@
                                     <div class="form-group">
                                         <div class="form-line">
 
-                                            <input type="text" id="fechadesde" placeholder="Fecha Desde" class="form-control" data-modal="true" data-large-mode="true" data-lang="es" data-format="d-m-Y" data-large-default="true" onfocus="desdeInit()">
+                                            <input type="text" name="fechaD" id="fechadesde" placeholder="Fecha Desde" class="form-control" data-modal="true" data-large-mode="true" data-lang="es" data-format="d-m-Y" data-large-default="true" onfocus="desdeInit()">
 
                                             <script>
                                                 function desdeInit() {
@@ -112,7 +111,7 @@
                                     <div class="form-group">
                                         <div class="form-line">
 
-                                            <input type="text" id="fechahasta" placeholder="Fecha Hasta" class="form-control" data-modal="true" data-large-mode="true" data-lang="es" data-format="d-m-Y" data-large-default="true" onfocus="hastaInit()">
+                                            <input type="text" name="fechaH" id="fechahasta" placeholder="Fecha Hasta" class="form-control" data-modal="true" data-large-mode="true" data-lang="es" data-format="d-m-Y" data-large-default="true" onfocus="hastaInit()">
 
                                             <script>
                                                 function hastaInit() {
@@ -128,7 +127,7 @@
 
 
 
-                           <a href="{{ url('/CU07ConsultarIntervenciones2') }}"> <button type="button" class="btn bg-cyan m-t-15 waves-effect">BUSCAR</button></a>
+                           <button type="submit" class="btn bg-cyan m-t-15 waves-effect">BUSCAR</button>
 
 
                         </form>
@@ -143,9 +142,9 @@
     </div>
 </section>
 
-@endsection
+{% endblock %}
 
-@section('footer')
+{% block footer %}
 
 
 
@@ -163,4 +162,4 @@
 
 <!-- dateDropper lib -->
 <script src="{{ asset('plugins/datedrooper/datedropper.js') }}"></script>
-@endsection
+{% endblock %}

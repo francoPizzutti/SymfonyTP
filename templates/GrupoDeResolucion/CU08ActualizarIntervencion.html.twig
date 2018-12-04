@@ -1,6 +1,6 @@
-@extends('layoutConstantes.baseLayout')
+{% extends 'layout/baseLayout.html.twig' %}
 
-@section('header')
+{% block header %}
 
     <!-- Bootstrap Select Css -->
     <link href="{{ asset('plugins/bootstrap-select/css/bootstrap-select.css') }}" rel="stylesheet" />
@@ -20,13 +20,13 @@
             $('#inp4').removeClass('focused');
         }
     </script>
-@endsection
+{% endblock %}
 
-@section('menu')
-    @include('GrupoDeResolucion.menu.CU08menu')
-    @endsection
+{% block menu %}
+    {% include 'GrupoDeResolucion/menu/CU08menu.html.twig' %}
+{% endblock %}
 
-@section('content')
+{% block content %}
 
 <section class="content">
     <div class="container-fluid">
@@ -60,25 +60,23 @@
                         </ul>
                     </div>
                     <div class="body">
-                        <form id="form2">
+                        <form id="formulario" method="post" action="{{ path('ProcesarActualizacion') }}">
                             <!-- Estados actual y nuevo -->
                             <div class="row clearfix">
                                 <div class="col-sm-6">
                                     <div class="form-group form-float">
                                         <div id="inp1" class="form-line" >
                                             <label class="form-label" style=" top: -10px; font-size: 12px;">Estado actual</label>
-                                            <input type="text" class="form-control" readonly value="Asignada" disabled>
+                                            <input type="text" class="form-control" readonly value="{{ dto.EstadoActual }}" disabled>
 
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
-                                    <select class="form-control show-tick" id="nuevoestado">
-                                        <option>Asignada</option>
-                                        <option>Abordada</option>
-                                        <option>Rechazada</option>
-                                        <option>Pausada</option>
-                                        <option>Cerrada</option>
+                                    <select class="form-control show-tick" id="nuevoestado" name="estado">
+                                        {% for estado in estados %}
+                                        <option value="{{ estado.Id }}">{{ estado.Descripcion }}</option>
+                                        {% endfor %}
                                     </select>
                                 </div>
 
@@ -89,8 +87,7 @@
                                 <div class="col-sm-12">
                                     <div class="form-group form-float">
                                         <div id="inp3" class="form-line">
-                                            <textarea  id="descripcion_problema" name="description" cols="30" rows="5" class="form-control no-resize" required>Seidler padeció tartamudez en su infancia, y previamente a su participación en la película, había leído acerca de la vida de Jorge VI. En la década de 1980 comenzó a escribir esbozos para un guion sobre la relación entre el monarca y su fonoaudiólogo, pero a petición de la viuda del rey, Isabel Bowes-Lyon, abandonó el trabajo hasta después de que ella falleciera. Más tarde reescribió el guion enfocándose mayormente en la relación entre los protagonistas. Nueve semanas antes de que comenzara la filmación se descubrieron unos cuadernos de Logue y se incorporaron algunas frases suyas al guion.
-                                            </textarea>
+                                            <textarea  id="descripcion_problema" cols="30" rows="5" class="form-control no-resize" readonly>{{ dto.Descripcion }}</textarea>
 
                                             <label class="form-label" style=" top: -10px; font-size: 12px;">Descripción del problema</label>
                                         </div>
@@ -108,7 +105,7 @@
                                     <div class="form-group form-float">
                                         <div id="inp4" class="form-line" >
                                             <label class="form-label" style=" top: -10px; font-size: 12px;">Clasificación actual del ticket</label>
-                                            <input type="text" class="form-control" readonly value="Solicitud de instalación de aplicaciones" disabled>
+                                            <input type="text" class="form-control" readonly value="{{ dto.Clasificacion }}" disabled>
 
                                         </div>
                                     </div>
@@ -119,19 +116,34 @@
 
                             <div class="row clearfix">
                                 <div class="col-sm-12">
+                                    {% if error.has('observacion') %}
                                     <div class="form-group form-float">
                                         <div class="form-line">
-                                            <textarea  id="descripcion_ticket" name="description" cols="30" rows="5" class="form-control no-resize" required></textarea>
+                                            <textarea  id="descripcion_ticket" name="observacion" cols="30" rows="5" class="form-control no-resize" required>{{ dto.Observacion }}</textarea>
 
                                             <label class="form-label">Observaciones</label>
                                         </div>
                                         <div class="help-info">Min. 3, Max. 255 caracteres</div>
-                                        <label class="error">No se ha agregado una observación</label>
+                                        <label class="error">{{ error.get('observacion') }}</label>
                                     </div>
+                                    {% else %}
+                                    <div class="form-group form-float">
+                                        <div class="form-line">
+                                            <textarea  id="descripcion_ticket" name="observacion" cols="30" rows="5" class="form-control no-resize" required>{{ dto.Observacion }}</textarea>
+
+                                            <label class="form-label">Observaciones</label>
+                                        </div>
+                                        <div class="help-info">Min. 3, Max. 255 caracteres</div>
+
+                                    </div>
+                                    {% endif %}
                                 </div>
 
 
                             </div>
+
+                            <input type="hidden" name="intervencion" value="{{ dto.Intervencion}}">
+                            <input type="hidden" name="ticket" value="{{ dto.Ticket }}">
 
 
 
@@ -180,9 +192,9 @@
     </div>
 </section>
 
-@endsection
+{% endblock %}
 
-@section('footer')
+{% block footer %}
 
 <!-- Bootstrap Notify Plugin Js -->
 <script src="{{ asset('plugins/bootstrap-notify/bootstrap-notify.js') }}"></script>
@@ -236,8 +248,11 @@
                 z_index: 1031,
             });
         }
+        else {
+            document.getElementById("formulario").submit();
+        }
 
     });
 
 </script>
-@endsection
+{% endblock %}
