@@ -100,7 +100,7 @@
 
                                         {% else %}
                                             <div class="form-line">
-                                                <input type="text" class="form-control" name="idTicket"  value="{{ requestflash.get(0) }}">
+                                                <input type="text" class="form-control" name="idTicket"  value="{{ requestflash.get(0) }}" readonly>
                                                 <label class="form-label">Número de Ticket</label>
                                             </div>
                                             <div class="help-info">Número sugerido</div>
@@ -112,14 +112,14 @@
                                         {% if error.has('legajo') %}
 
                                                 <div class="form-line focused error">
-                                                    <input type="number" class="form-control" name="legajo" value="{{ requestflash.get(1) }}">
+                                                    <input type="number" class="form-control" name="legajo" value="{{ requestflash.get(1) }}" min="1">
                                                     <label class="form-label">Número de Legajo</label>
                                                 </div>
                                                 <label class="error">{{ error.get('legajo') }}</label>
 
                                         {% else %}
                                         <div class="form-line">
-                                            <input type="number" name="legajo" class="form-control" {% if error.evaluate() %}  {{ requestflash.get(1) }} {% endif %}>
+                                            <input type="number" min="1" name="legajo" class="form-control" {% if error.evaluate() %}  {{ requestflash.get(1) }} {% endif %}>
                                             <label class="form-label">Número de Legajo</label>
                                         </div>
                                         <div class="help-info">Legajo del Empleado que hizo el reclamo</div>

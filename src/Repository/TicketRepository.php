@@ -147,4 +147,83 @@ where AUX.grupo_de_resolucion_id = '.$grupo;
 
 
     }
+
+
+    public function ConsultarIntervenciones($grupo, $estado, $ticket, $legajo, $fechaD, $fechaH){
+        $entityManager = $this->getEntityManager();
+
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = 'select AUX.ticket_id from (select he.ticket_id, max(he.id), he.grupo_de_resolucion_id
+from item_historico_estados he group by he.ticket_id, he.grupo_de_resolucion_id) AUX 
+where AUX.grupo_de_resolucion_id = '.$grupo;
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+
+
+        $qb = $this->createQueryBuilder('t');
+        $qb ->setParameter('grupo', $stmt->fetchAll())
+            ->where($qb->expr()->in('t.id', ':grupo'));
+
+
+        if($estado!=0){
+
+            $sql = 'select i.ticket_id from intervencion i, (select hi.intervencion_id,hi.estado_intervencion_id, max(hi.id)
+from item_historico_intervencion hi group by hi.intervencion_id, hi.estado_intervencion_id) AUX
+where i.id = AUX.intervencion_id and AUX.estado_intervencion_id = '.$estado;
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+
+            $qb ->setParameter('estado', $stmt->fetchAll())
+                ->where($qb->expr()->in('t.id', ':estado'));
+
+        }
+        if($ticket!=null){
+            $qb ->setParameter('ticket', $ticket)
+                ->andWhere('t.id = :ticket');
+        }
+
+        if ($legajo != null){
+            $sql = 'select t.id from ticket t, empleado e where t.empleado_id = e.id and e.legajo = 1'.$legajo;
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+
+            $qb ->setParameter('legajo', $stmt->fetchAll())
+                ->where($qb->expr()->in('t.id', ':legajo'));
+        }
+
+        if($fechaD!=null){
+            $fechafloorD = new datetime(''.$fechaD.'00:00:00');
+            $fechaceilD= new datetime(''.$fechaD.'23:59:59');
+            $conn = $this->getEntityManager()->getConnection();
+
+            $sql = "select distinct i.ticket_id from intervencion i where i.fecha_desde > '".$fechafloorD->format('Y-m-d H:i:s')."' and
+i.fecha_desde < '".$fechaceilD->format('Y-m-d H:i:s')."'";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+            $qb ->setParameter('fechaD', $stmt->fetchAll())
+                ->andWhere($qb->expr()->in('t.id', ':fechaD'));
+
+        }
+
+        if($fechaH!=null){
+            $fechafloorH = new datetime(''.$fechaD.'00:00:00');
+            $fechaceilH= new datetime(''.$fechaD.'23:59:59');
+            $conn = $this->getEntityManager()->getConnection();
+
+            $sql = "select distinct i.ticket_id from intervencion i where i.fecha_hasta > '".$fechafloorH->format('Y-m-d H:i:s')."' and
+i.fecha_hasta < '".$fechaceilH->format('Y-m-d H:i:s')."'";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+            $qb ->setParameter('fechaH', $stmt->fetchAll())
+                ->andWhere($qb->expr()->in('t.id', ':fechaH'));
+
+        }
+
+        return $qb->getQuery()->execute();
+
+
+
+
+    }
 }

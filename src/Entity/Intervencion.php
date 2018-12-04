@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -40,10 +41,21 @@ class Intervencion
      */
     private $HistorialIntervencion;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $Fecha_Desde;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $Fecha_Hasta;
+
 
     public function __construct()
     {
         $this->HistorialIntervencion = new ArrayCollection();
+        $this->Fecha_Desde = new DateTime();
     }
 
 
@@ -118,6 +130,35 @@ class Intervencion
                 $historialIntervencion->setIntervencion(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getFechaDesde(): ?\DateTimeInterface
+    {
+        return $this->Fecha_Desde;
+    }
+
+    public function getFechaDesdeString()
+    {
+        return $this->Fecha_Desde->format('Y-m-d');
+    }
+
+    public function setFechaDesde(?\DateTimeInterface $Fecha_Desde): self
+    {
+        $this->Fecha_Desde = $Fecha_Desde;
+
+        return $this;
+    }
+
+    public function getFechaHasta(): ?\DateTimeInterface
+    {
+        return $this->Fecha_Hasta;
+    }
+
+    public function setFechaHasta(?\DateTimeInterface $Fecha_Hasta): self
+    {
+        $this->Fecha_Hasta = $Fecha_Hasta;
 
         return $this;
     }
