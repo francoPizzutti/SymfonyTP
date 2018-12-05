@@ -55,7 +55,7 @@ function errorNotify(mensaje) {
         title: '  ',
         icon: 'glyphicon glyphicon-remove',
         message: mensaje,
-    },{
+    }, {
         type: 'danger',
 
         animate: {
@@ -70,5 +70,28 @@ function errorNotify(mensaje) {
         spacing: 10,
         z_index: 1031,
     });
-
 }
+    function warningNotify(mensaje) {
+
+        $.notify({
+            title: '  ',
+            icon: 'glyphicon glyphicon-remove',
+            message: mensaje,
+        },{
+            type: 'warning',
+
+            animate: {
+                enter: 'animated fadeInLeft',
+                exit: 'animated fadeOutLeft'
+            },
+            placement: {
+                from: "bottom",
+                align: "left"
+            },
+            offset: 20,
+            spacing: 10,
+            z_index: 1031,
+        });
+
+
+    }
