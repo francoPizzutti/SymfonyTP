@@ -196,8 +196,9 @@
 
 {% block footer %}
 
-<!-- Bootstrap Notify Plugin Js -->
-<script src="{{ asset('plugins/bootstrap-notify/bootstrap-notify.js') }}"></script>
+    <!-- Bootstrap Notify Plugin Js -->
+    <script src="{{ asset('plugins/bootstrap-notify/bootstrap-notify.js') }}"></script>
+    <script src="{{ asset('js/notify.js') }}"></script>
 
 
 <!-- Select Plugin Js -->
@@ -255,4 +256,16 @@
     });
 
 </script>
+
+    <script>
+        function warning(mensaje) {
+            warningNotify(mensaje);
+            sacar();
+
+        }
+        function success(mensaje) {
+            successNotify(mensaje);
+            sacar();
+        }
+    </script>
 {% endblock %}

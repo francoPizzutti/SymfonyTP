@@ -13,8 +13,7 @@ INSERT INTO `estado_intervencion` (`id`, `descripcion`) VALUES
 	(1, 'Asignada'),
 	(2, 'Rechazada'),
 	(3, 'Pausada'),
-	(4, 'Abordada'),
-	(5, 'Cerrada');
+	(4, 'Cerrada');
 /*!40000 ALTER TABLE `estado_intervencion` ENABLE KEYS */;
 
 INSERT INTO `estado_ticket` (`id`, `descripcion`) VALUES

@@ -5,6 +5,9 @@ namespace App\Controller;
 use App\Entity\EstadoIntervencion;
 use App\Entity\EstadoTicket;
 use App\Entity\GrupoResolucion;
+use App\Entity\Intervencion;
+use App\Entity\ItemHistoricoEstados;
+use App\Entity\ItemHistoricoIntervencion;
 use App\Entity\Ticket;
 use App\Repository\EstadoIntervencionRepository;
 use App\Service\error;
@@ -46,10 +49,12 @@ class IntervencionController extends AbstractController
 
     //PRESENTA LA VISTA PARA ACTUALIZAR UNA INTERVENCION, RECIBE COMO PARAMETRO EL ID DEL TICKET Y EL DE LA INTERVENCION
     public function VistaActualizar($id, error $error){
-        $gr = $this->getUser()->getGrupoResolucion();
-        if ($this->getUser()!= null && $gr->getId()!=1) {
+        if ($this->getUser()!= null && $this->getUser()->getGrupoResolucion()->getId()!=1) {
             $repository = $this->getDoctrine()->getRepository(EstadoIntervencion::class);
-            $estados = $repository->findAll();
+            $estados = $repository->findBy(
+                [],
+                ['Descripcion' => 'ASC']
+            );
             $dto = $this->buildIntervencionDTO($id);
 
             return $this->render('GrupoDeResolucion/CU08ActualizarIntervencion.html.twig', [
@@ -61,7 +66,7 @@ class IntervencionController extends AbstractController
             ]);
 
 
-        }
+        }else return $this->redirectToRoute('home');
     }
 
     /** ################################################################################################################## */
@@ -109,23 +114,92 @@ class IntervencionController extends AbstractController
 
     }
 
-
+    //PROCESA UN FORMULARIO PARA ACTUALIZAR UNA INTERVENCION
     public function Actualizar(Request $request, error $error){
-        $gr = $this->getUser()->getGrupoResolucion();
-        if ($this->getUser()!= null && $gr->getId()!=1) {
+
+        if ($this->getUser()!= null && $this->getUser()->getGrupoResolucion()->getId()!=1) {
+            $gr = $this->getUser()->getGrupoResolucion();
             //recuperamos los parametros enviados en el request
             $Nestado = $request->request->get('estado');
             $Nobservacion = $request->request->get('observacion');
             $Nticket =  $request->request->get('ticket');
             $Nintervencion =  $request->request->get('intervencion');
 
+
+            $repository = $this->getDoctrine()->getRepository(EstadoIntervencion::class);
+            $estados = $repository->findBy(
+                [],
+                ['Descripcion' => 'ASC']
+            );
+
             if ($this->ValidaDescripcion($Nobservacion)){
+                //Vamos a recuperar el ticket y la intervencion por separado
+                $repository = $this->getDoctrine()->getRepository(Ticket::class);
+                $ticket = $repository->find($Nticket);
+                $repository = $this->getDoctrine()->getRepository(Intervencion::class);
+                $intervencion = $repository->find($Nintervencion);
+
+
+
+                /* DENTRO DE ESTE FRAGMENTO SE PONE EN MARCHA LA MAQUINA DE ESTADOS*/
+
+                /*Evaluamos si el estado anterior de la intervencion es asignada, si es asi
+                puede ser cerrada, pausada o rechazada. En caso contrario se retorna indicando que el ticket
+                esta en posesión de la mesa de ayuda*/
+                $repository = $this->getDoctrine()->getRepository(EstadoIntervencion::class);
+                $estadoASignada = $repository->find(1);
+                if ($intervencion->getHistorialIntervencion()->last()->getEstadoIntervencion()==$estadoASignada){
+                    switch ($Nestado) {
+                        case 2:
+                            //rechazada
+                            $this->RechazarIntervencion($intervencion);
+                            $this->Devolver($ticket, "Rechazó la intervencion");
+                             break;
+                        case 3:
+                            //pausada
+                            $this->PausarIntervencion($intervencion);
+                            $this->Devolver($ticket, "Pausó la intervención");
+                              break;
+                        case 4:
+                           //cerrada
+                            $this->CerrarIntervencion($intervencion);
+                           if($ticket->poseeIntervencionesAbiertas()){
+                               $this->Devolver($ticket, "Cerro la intervención");
+                           }else $this->Terminar($ticket);
+                            break;
+
+                        default:
+                            //Retornamos con mensaje de error
+                    }
+
+                }
+                else{
+                    /* como la intervencion esta en mesa de ayuda u otro grupo de resolucion retornamos con un mensaje*/
+
+                    $dto = $this->buildIntervencionDTO($Nticket);
+                    return $this->render('GrupoDeResolucion/CU08ActualizarIntervencion.html.twig', [
+                        'load' => 'warning("El ticket no pertenece al grupo de resolucion")',
+                        'titulo' => 'Actualizar Intervención',
+                        'estados' => $estados,
+                        'dto' => $dto,
+                        'error' => $error
+                    ]);
+                }
+                /* FIN MAQUINA DE ESTADOS*/
+
+                $dto = $this->buildIntervencionDTO($Nticket);
+                    return $this->render('GrupoDeResolucion/CU08ActualizarIntervencion.html.twig', [
+                        'load' => 'success("El estado de la intervencion fue actualizado correctamente")',
+                        'titulo' => 'Actualizar Intervención',
+                        'estados' => $estados,
+                        'dto' => $dto,
+                        'error' => $error
+                    ]);
 
             }
             else{
                 $error->set('observacion', 'La descripcion no cumple con los requisitos');
-                $repository = $this->getDoctrine()->getRepository(EstadoIntervencion::class);
-                $estados = $repository->findAll();
+
                 $dto = $this->buildIntervencionDTO($Nticket);
 
                 return $this->render('GrupoDeResolucion/CU08ActualizarIntervencion.html.twig', [
@@ -206,6 +280,7 @@ class IntervencionController extends AbstractController
         else return true;
     }
 
+    /* CONSTRUYE EL DTO PARA EL ENVIO DE DATOS A LA VISTA ACTUALIZAR INTERVENCION */
     public function buildIntervencionDTO($id){
         $dto = new intervencionDTO();
         $repository = $this->getDoctrine()->getRepository(Ticket::class);
@@ -219,5 +294,131 @@ class IntervencionController extends AbstractController
         $dto->setEstadoActual($intervencion->getHistorialIntervencion()->last()->getEstadoIntervencion()->getDescripcion());
         $dto->setObservacion($intervencion->getObservaciones());
         return $dto;
+    }
+
+    /* RECHAZA UNA INTERVENCION*/
+    public function RechazarIntervencion(Intervencion $intervencion){
+        //cerramos el último item histórico de intervención
+        $intervencion->getHistorialIntervencion()->last()->cerrar();
+
+        $repository = $this->getDoctrine()->getRepository(EstadoIntervencion::class);
+        $estadoRechazada = $repository->find(2);
+        //creamos un nuevo item historico de intervencion
+        $itemHistorico = new ItemHistoricoIntervencion();
+        $itemHistorico->setEstadoIntervencion($estadoRechazada);
+        $itemHistorico->setUser($this->getUser());
+        $intervencion->addHistorialIntervencion($itemHistorico);
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($intervencion);
+        $entityManager->flush();
+        return;
+    }
+
+    /* PAUSA UNA INTERVENCION*/
+    public function PausarIntervencion(Intervencion $intervencion){
+        //cerramos el último item histórico de intervención
+        $intervencion->getHistorialIntervencion()->last()->cerrar();
+
+        $repository = $this->getDoctrine()->getRepository(EstadoIntervencion::class);
+        $estadoPausada = $repository->find(3);
+        //creamos un nuevo item historico de intervencion
+        $itemHistorico = new ItemHistoricoIntervencion();
+        $itemHistorico->setEstadoIntervencion($estadoPausada);
+        $itemHistorico->setUser($this->getUser());
+        $intervencion->addHistorialIntervencion($itemHistorico);
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($intervencion);
+        $entityManager->flush();
+        return;
+    }
+
+    /* CIERRA UNA INTERVENCION*/
+    public function CerrarIntervencion(Intervencion $intervencion){
+        //cerramos el último item histórico de intervención
+        $intervencion->getHistorialIntervencion()->last()->cerrar();
+
+        $repository = $this->getDoctrine()->getRepository(EstadoIntervencion::class);
+        $estadoCerrada = $repository->find(4);
+        //creamos un nuevo item historico de intervencion
+        $itemHistorico = new ItemHistoricoIntervencion();
+        $itemHistorico->setEstadoIntervencion($estadoCerrada);
+        $itemHistorico->setUser($this->getUser());
+        $intervencion->addHistorialIntervencion($itemHistorico);
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($intervencion);
+        $entityManager->flush();
+        return;
+    }
+
+    /* DEVUELVE EL TICKET A LA MESA DE AYUDA*/
+    public function Devolver(Ticket $ticket, $obs){
+        //creamos un nuevo historial de estados
+        $hist = new ItemHistoricoEstados();
+
+        //seteamos el usuario que devuelve el ticket
+        $hist->setUser($this->getUser());
+
+        //seteamos las observaciones declinaron el ticket
+        $hist->setObservacion("el grupo de resolución ".$this->getUser()->getGrupoResolucion()->getNombre()." ".$obs);
+
+        //buscamos y le asignamos la mesa de ayuda como grupo de resolución
+        $repository = $this->getDoctrine()->getRepository(GrupoResolucion::class);
+        $mesaDeAyuda = $repository->find(1);
+        $hist->setGrupoResolucion($mesaDeAyuda);
+
+        //buscamos el estado abierto sin derivar
+        $repository = $this->getDoctrine()->getRepository(EstadoTicket::class);
+        $estadoAbierto = $repository->find(1);
+        $hist->setEstadoTicket($estadoAbierto);
+
+        //como la clasificación no cambio el historial de estados sigue apuntando a la última clasificación
+        $hist->setItemClasificacion($ticket->getLastHistorialClasificacion());
+
+        $ticket->addHistorialEstado($hist);
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($ticket);
+        $entityManager->flush();
+        return;
+
+    }
+
+
+    /* PONE EL TICKET EN ESTADO A LA ESPERA OK*/
+    public function Terminar(Ticket $ticket){
+        //creamos un nuevo historial de estados
+        $hist = new ItemHistoricoEstados();
+
+        //seteamos el usuario que devuelve el ticket
+        $hist->setUser($this->getUser());
+
+        $obs = "Cerro la intervención";
+
+        //seteamos las observaciones declinaron el ticket
+        $hist->setObservacion("el grupo de resolución ".$this->getUser()->getGrupoResolucion()->getNombre()." ".$obs);
+
+        //buscamos y le asignamos la mesa de ayuda como grupo de resolución
+        $repository = $this->getDoctrine()->getRepository(GrupoResolucion::class);
+        $mesaDeAyuda = $repository->find(1);
+        $hist->setGrupoResolucion($mesaDeAyuda);
+
+        //buscamos el estado a la espera ok
+        $repository = $this->getDoctrine()->getRepository(EstadoTicket::class);
+        $estadoAbierto = $repository->find(3);
+        $hist->setEstadoTicket($estadoAbierto);
+
+        //como la clasificación no cambio el historial de estados sigue apuntando a la última clasificación
+        $hist->setItemClasificacion($ticket->getLastHistorialClasificacion());
+
+        $ticket->addHistorialEstado($hist);
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($ticket);
+        $entityManager->flush();
+        return;
+
     }
 }
