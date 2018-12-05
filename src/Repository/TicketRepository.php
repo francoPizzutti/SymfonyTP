@@ -168,9 +168,9 @@ where AUX.grupo_de_resolucion_id = '.$grupo;
 
         if($estado != 0){
 
-            $sql = 'select i.ticket_id from intervencion i, (select hi.intervencion_id,hi.estado_intervencion_id, max(hi.id)
-from item_historico_intervencion hi group by hi.intervencion_id, hi.estado_intervencion_id) AUX
-where i.id = AUX.intervencion_id and AUX.estado_intervencion_id = '.$estado;
+            $sql = 'select i.ticket_id from intervencion i, item_historico_intervencion hist, (select hi.intervencion_id, max(hi.id) max_hist
+from item_historico_intervencion hi group by hi.intervencion_id) aux where aux.intervencion_id = i.id and
+aux.max_hist = hist.id and hist.estado_intervencion_id ='.$estado.' and i.grupo_resolucion_id = '.$grupo;
             $stmt = $conn->prepare($sql);
             $stmt->execute();
 
