@@ -166,7 +166,7 @@ where AUX.grupo_de_resolucion_id = '.$grupo;
             ->where($qb->expr()->in('t.id', ':grupo'));
 
 
-        if($estado!=0){
+        if($estado != 0){
 
             $sql = 'select i.ticket_id from intervencion i, (select hi.intervencion_id,hi.estado_intervencion_id, max(hi.id)
 from item_historico_intervencion hi group by hi.intervencion_id, hi.estado_intervencion_id) AUX
@@ -175,9 +175,10 @@ where i.id = AUX.intervencion_id and AUX.estado_intervencion_id = '.$estado;
             $stmt->execute();
 
             $qb ->setParameter('estado', $stmt->fetchAll())
-                ->where($qb->expr()->in('t.id', ':estado'));
+                ->andWhere($qb->expr()->in('t.id', ':estado'));
 
         }
+
         if($ticket!=null){
             $qb ->setParameter('ticket', $ticket)
                 ->andWhere('t.id = :ticket');
