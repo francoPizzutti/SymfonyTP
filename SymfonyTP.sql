@@ -13,7 +13,8 @@ INSERT INTO `estado_intervencion` (`id`, `descripcion`) VALUES
 	(1, 'Asignada'),
 	(2, 'Rechazada'),
 	(3, 'Pausada'),
-	(4, 'Cerrada');
+	(4, 'Abordada'),
+	(5, 'Cerrada');
 /*!40000 ALTER TABLE `estado_intervencion` ENABLE KEYS */;
 
 INSERT INTO `estado_ticket` (`id`, `descripcion`) VALUES
@@ -63,8 +64,8 @@ INSERT INTO `grupo_resolucion` (`id`, `estado_id`, `nombre`, `nivel`) VALUES
 
 
 INSERT INTO `user` (`id`, `grupo_resolucion_id`, `empleado_id`, `username`, `email`, `password`, `is_active`, `roles`, `nivel`) VALUES
-(1, 1, 1, 'lisandro', 'lisandrorattero@hotmail.com', '$2y$13$phuW/fIeFbfpS0uec1vgoe7RrQaLLvIeAs3sTlgphUyPq7/cPmGLC', 1, 'administrador de redes', 0),
-(2, 8, 3, 'franco', 'fpizzuttimed@gmail.com', '$2y$13$bbEBXIK6sFmE.o9rBg0bNOABSK3zSEaKmMsAzru2vGyslKn2uXUV6', 1, 'un rol', 2);
+	(1, 1, 1, 'lisandro', 'lisandrorattero@hotmail.com', '$2y$13$phuW/fIeFbfpS0uec1vgoe7RrQaLLvIeAs3sTlgphUyPq7/cPmGLC', 1, 'administrador de redes', 0),
+	(2, 4, 4, 'hector', 'hector.or.cr@gmail.com', '$2y$13$uFinNH0OU60oMKI9IYp9/.bUGzPRDxlOlmwsX10zcNo4kt2c4rd0O', 1, 'un rol', 1);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 
 
