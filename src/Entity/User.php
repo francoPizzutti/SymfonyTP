@@ -40,20 +40,12 @@ class User implements UserInterface, \Serializable
      */
     private $password;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private $isActive;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
     private $roles;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $Nivel;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\GrupoResolucion")
@@ -117,17 +109,6 @@ class User implements UserInterface, \Serializable
         return $this;
     }
 
-    public function getIsActive(): ?bool
-    {
-        return $this->isActive;
-    }
-
-    public function setIsActive(bool $isActive): self
-    {
-        $this->isActive = $isActive;
-
-        return $this;
-    }
 
     public function getRoles()
     {
@@ -154,7 +135,6 @@ class User implements UserInterface, \Serializable
             $this->id,
             $this->username,
             $this->password,
-            $this->isActive,
             // see section on salt below
             // $this->salt,
         ));
@@ -176,7 +156,6 @@ class User implements UserInterface, \Serializable
             $this->id,
             $this->username,
             $this->password,
-            $this->isActive,
             // see section on salt below
             // $this->salt
             ) = unserialize($serialized, array('allowed_classes' => false));
@@ -205,17 +184,6 @@ class User implements UserInterface, \Serializable
         // TODO: Implement eraseCredentials() method.
     }
 
-    public function getNivel(): ?int
-    {
-        return $this->Nivel;
-    }
-
-    public function setNivel(?int $Nivel): self
-    {
-        $this->Nivel = $Nivel;
-
-        return $this;
-    }
 
 
 
