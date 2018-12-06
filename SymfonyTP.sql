@@ -13,7 +13,7 @@ INSERT INTO `estado_intervencion` (`id`, `descripcion`) VALUES
 	(1, 'Asignada'),
 	(2, 'Rechazada'),
 	(3, 'Pausada'),
-	(5, 'Cerrada');
+	(4, 'Cerrada');
 
 
 INSERT INTO `estado_ticket` (`id`, `descripcion`) VALUES
