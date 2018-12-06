@@ -185,12 +185,12 @@ aux.max_hist = hist.id and hist.estado_intervencion_id ='.$estado.' and i.grupo_
         }
 
         if ($legajo != null){
-            $sql = 'select t.id from ticket t, empleado e where t.empleado_id = e.id and e.legajo = 1'.$legajo;
+            $sql = 'select t.id from ticket t, empleado e where t.empleado_id = e.id and e.legajo = '.$legajo;
             $stmt = $conn->prepare($sql);
             $stmt->execute();
 
             $qb ->setParameter('legajo', $stmt->fetchAll())
-                ->where($qb->expr()->in('t.id', ':legajo'));
+                ->andWhere($qb->expr()->in('t.id', ':legajo'));
         }
 
         if($fechaD!=null){

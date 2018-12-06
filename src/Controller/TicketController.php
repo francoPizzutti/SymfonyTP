@@ -550,6 +550,11 @@ class TicketController extends AbstractController
                 $repository = $this->getDoctrine()->getRepository(GrupoResolucion::class);
                 $gr = $repository->find($idgrupoResolucion);
 
+                //Consultamos si la intervencion de la mesa de ayuda esta abierta, en tal caso la cerramos
+
+                    $this->cerrarIntervencionMesa($ticket, $observaciones, $this->getUser());
+
+
                 //Derivamos el ticket
                 $this->derivar($ticket, $observaciones, $gr);
 
@@ -612,6 +617,8 @@ class TicketController extends AbstractController
             //BUSCAMOS EL GRUPO DE RESOLUCION QUE RECIBIRA EL TICKET
             $repository = $this->getDoctrine()->getRepository(GrupoResolucion::class);
             $gr = $repository->find($Ngrupo);
+
+            $this->cerrarIntervencionMesa($ticket, "El ticket fue derivado inmediatamente", $this->getUser());
 
             $this->derivar($ticket, "El ticket fue derivado inmediatamente", $gr);
 
@@ -908,25 +915,31 @@ class TicketController extends AbstractController
         /* Buscamos la intervencion de la mesa de ayuda*/
         $interMesa = $ticket->getIntervenciones()->first();
 
-        /* seteamos las observaciones*/
-        $interMesa->setObservaciones($obs);
+        if($interMesa->getFechaHasta() == null) {
 
-        /* buscamos el item historico de la intervencion y lo cerramos*/
-        $historialMesa = $interMesa->getHistorialIntervencion()->first();
-        $historialMesa->cerrar();
+            /* seteamos las observaciones*/
+            $interMesa->setObservaciones($obs);
 
-        /* buscamos el estado cerrado de la intervencion desde la base de datos*/
-        $repository = $this->getDoctrine()->getRepository(EstadoIntervencion::class);
-        $EstadoIntervencion = $repository->find(5);
+            /* buscamos el item historico de la intervencion y lo cerramos*/
+            $historialMesa = $interMesa->getHistorialIntervencion()->first();
+            $historialMesa->cerrar();
 
-        /* creamos el nuevo item historico de intervencion y le seteamos el usuario y el nuevo estado cerrado*/
-        $historialNuevo = new ItemHistoricoIntervencion();
-        $historialNuevo->setUser($user);
-        $historialNuevo->setEstadoIntervencion($EstadoIntervencion);
-        $historialNuevo->cerrar();
+            /* buscamos el estado cerrado de la intervencion desde la base de datos*/
+            $repository = $this->getDoctrine()->getRepository(EstadoIntervencion::class);
+            $EstadoIntervencion = $repository->find(5);
 
-        /* agregamos el nuevo item historico a la intervencion, y por ende al ticket*/
-        $interMesa->addHistorialIntervencion($historialNuevo);
+            /* creamos el nuevo item historico de intervencion y le seteamos el usuario y el nuevo estado cerrado*/
+            $historialNuevo = new ItemHistoricoIntervencion();
+            $historialNuevo->setUser($user);
+            $historialNuevo->setEstadoIntervencion($EstadoIntervencion);
+            $historialNuevo->cerrar();
+
+            /* agregamos el nuevo item historico a la intervencion, y por ende al ticket*/
+            $interMesa->addHistorialIntervencion($historialNuevo);
+
+            /* seteamos la fecha hasta de la intervencion*/
+            $interMesa->cerrar();
+        }
 
     }
 
@@ -981,7 +994,6 @@ class TicketController extends AbstractController
 
         }
     }
-
 
     public function getGrupoResolucion(Ticket $ticket)
     {
@@ -1056,14 +1068,6 @@ class TicketController extends AbstractController
         return;
 
     }
-
-
-
-
-
-
-
-
 
     public function CerrarTicket($id){
         if ($this->getUser()!= null) {
