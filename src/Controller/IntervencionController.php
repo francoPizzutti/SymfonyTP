@@ -91,7 +91,7 @@ class IntervencionController extends AbstractController
 
 
 
-                $stat = $this->HeaderStat($result, 1, 5);
+                $stat = $this->HeaderStat($result, 1, 4);
                 $resultDTO = $this->buildTicketIntervencionDTO($result);
 
 
@@ -338,6 +338,7 @@ class IntervencionController extends AbstractController
     public function CerrarIntervencion(Intervencion $intervencion){
         //cerramos el último item histórico de intervención
         $intervencion->getHistorialIntervencion()->last()->cerrar();
+        $intervencion->cerrar();
 
         $repository = $this->getDoctrine()->getRepository(EstadoIntervencion::class);
         $estadoCerrada = $repository->find(4);
