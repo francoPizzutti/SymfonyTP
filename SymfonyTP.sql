@@ -1,13 +1,12 @@
-
-INSERT INTO `estado_clasificacion_ticket` (`id`, `descripcion`) VALUES
+﻿INSERT INTO `estado_clasificacion_ticket` (`id`, `descripcion`) VALUES
 	(1, 'Activa'),
 	(2, 'InActiva');
-/*!40000 ALTER TABLE `estado_clasificacion_ticket` ENABLE KEYS */;
+
 
 INSERT INTO `estado_grupo_resolucion` (`id`, `descripcion`) VALUES
 	(1, 'Activo'),
 	(2, 'InActivo');
-/*!40000 ALTER TABLE `estado_grupo_resolucion` ENABLE KEYS */;
+
 
 INSERT INTO `estado_intervencion` (`id`, `descripcion`) VALUES
 	(1, 'Asignada'),
@@ -15,19 +14,19 @@ INSERT INTO `estado_intervencion` (`id`, `descripcion`) VALUES
 	(3, 'Pausada'),
 	(4, 'Abordada'),
 	(5, 'Cerrada');
-/*!40000 ALTER TABLE `estado_intervencion` ENABLE KEYS */;
+
 
 INSERT INTO `estado_ticket` (`id`, `descripcion`) VALUES
 	(1, 'Abierto Sin Derivar'),
 	(2, 'Abierto Derivado'),
 	(3, 'A la Espera OK'),
 	(4, 'Cerrado');
-/*!40000 ALTER TABLE `estado_ticket` ENABLE KEYS */;
+
 
 INSERT INTO `cargo` (`id`, `descripcion`) VALUES
 	(1, 'Usuario de Mesa de Ayuda'),
 	(2, 'Usuario de Grupo de Resolución');
-/*!40000 ALTER TABLE `cargo` ENABLE KEYS */;
+
 
 INSERT INTO `direccion` (`id`, `calle`, `piso`, `numero`, `oficina`) VALUES
 	(1, 'San Martin ', 5, 3049, 'secretaria de extensión'),
@@ -36,7 +35,7 @@ INSERT INTO `direccion` (`id`, `calle`, `piso`, `numero`, `oficina`) VALUES
 	(4, '4 Jefes', 1, 2345, 'La de Al lado de la otra'),
 	(5, 'Lavaisse', 0, 324, 'Asistencia Social'),
 	(6, '4 de Enero', 2, 334, 'DMZ');
-/*!40000 ALTER TABLE `direccion` ENABLE KEYS */;
+
 
 INSERT INTO `empleado` (`id`, `cargo_id`, `direccion_id`, `legajo`, `nombre`, `apellido`, `telefono_interno`, `telefono_directo`) VALUES
 	(1, 1, 1, 1, 'Lisandro Adolfo', 'Rattero', '344', '3424999235'),
@@ -44,7 +43,7 @@ INSERT INTO `empleado` (`id`, `cargo_id`, `direccion_id`, `legajo`, `nombre`, `a
 	(3, 2, 3, 3, 'Franco Augusto', 'Pizzutti', '45435', '3424667899'),
 	(4, 2, 4, 4, 'Hector Orlando', 'Crispens', '455', '3424872589'),
 	(5, 1, 5, 5, 'Cristian ', 'Impini', '235', '4444444444');
-/*!40000 ALTER TABLE `empleado` ENABLE KEYS */;
+
 
 
 INSERT INTO `grupo_resolucion` (`id`, `estado_id`, `nombre`, `nivel`) VALUES
@@ -60,13 +59,11 @@ INSERT INTO `grupo_resolucion` (`id`, `estado_id`, `nombre`, `nivel`) VALUES
 	(10, 1, 'Desarrollo sistema comercial', 2),
 	(11, 1, 'Desarrollo sistema RRHH', 2),
 	(12, 1, 'Desarrollo sistema de reclamos', 2);
-/*!40000 ALTER TABLE `grupo_resolucion` ENABLE KEYS */;
 
 
-INSERT INTO `user` (`id`, `grupo_resolucion_id`, `empleado_id`, `username`, `email`, `password`, `is_active`, `roles`, `nivel`) VALUES
-	(1, 1, 1, 'lisandro', 'lisandrorattero@hotmail.com', '$2y$13$phuW/fIeFbfpS0uec1vgoe7RrQaLLvIeAs3sTlgphUyPq7/cPmGLC', 1, 'administrador de redes', 0),
-	(2, 4, 4, 'hector', 'hector.or.cr@gmail.com', '$2y$13$uFinNH0OU60oMKI9IYp9/.bUGzPRDxlOlmwsX10zcNo4kt2c4rd0O', 1, 'un rol', 1);
-/*!40000 ALTER TABLE `user` ENABLE KEYS */;
+INSERT INTO `user` (`id`, `grupo_resolucion_id`, `empleado_id`, `username`, `email`, `password`,  `roles`) VALUES
+	(1, 1, 1, 'lisandro', 'lisandrorattero@hotmail.com', '$2y$13$phuW/fIeFbfpS0uec1vgoe7RrQaLLvIeAs3sTlgphUyPq7/cPmGLC', 'administrador de redes'),
+	(2, 4, 4, 'hector', 'hector.or.cr@gmail.com', '$2y$13$uFinNH0OU60oMKI9IYp9/.bUGzPRDxlOlmwsX10zcNo4kt2c4rd0O', 'un rol');
 
 
 INSERT INTO `clasificacion_ticket` (`id`, `estado_cla_id`, `user_id`, `descripcion`, `nombre`) VALUES
@@ -84,7 +81,7 @@ INSERT INTO `clasificacion_ticket` (`id`, `estado_cla_id`, `user_id`, `descripci
 	(12, 1, 1, 'Problemas con el correo electrónico', 'Problemas con el correo electrónico'),
 	(13, 1, 1, 'Solicitud de nuevos puestos de trabajo', 'Solicitud de nuevos puestos de trabajo'),
 	(14, 1, 1, 'Solicitud de soporte en el uso de alguna aplicación o sistema', 'Solicitud de soporte en el uso de alguna aplicación o sistema');
-/*!40000 ALTER TABLE `clasificacion_ticket` ENABLE KEYS */;
+
 
 
 
