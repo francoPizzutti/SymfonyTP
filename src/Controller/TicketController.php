@@ -45,7 +45,7 @@ class TicketController extends AbstractController
 
     /* PRESENTA LA VISTA CON EL FORMULARIO PARA EL REGISTRO DE UN NUEVO TICKET*/
     public function VistaRegistrar(error $error, requestflash $requestflash){
-        if ($this->getUser()!= null && $this->getUser()->getNivel()==0) {
+        if ($this->getUser()!= null && $this->getUser()->getGrupoResolucion()->getId() == 1) {
             $titulo = 'Registrar Nuevo Ticket';
             $load = '';
             $fecha = date("Y-m-d");
@@ -140,7 +140,7 @@ class TicketController extends AbstractController
     /* PRESENTA LA VISTA PARA DERIVAR UN TICKET*/
     public function VistaDerivarTicket(Request $request, requestflash $requestflash){
 
-        if ($this->getUser()!= null && $this->getUser()->getNivel()==0) {
+        if ($this->getUser()!= null && $this->getUser()->getGrupoResolucion()->getId() == 1) {
         //BUSCAMOS EL TICKET RECIBIDO EN EL REQUEST
         $repository = $this->getDoctrine()->getRepository(Ticket::class);
         $idTicket = $request->request->get('ticket');
@@ -180,7 +180,7 @@ class TicketController extends AbstractController
     public function Registrar(Request $request, error $error, requestflash $requestflash){
 
 
-    if ($this->getUser()!= null && $this->getUser()->getNivel()==0) {
+    if ($this->getUser()!= null && $this->getUser()->getGrupoResolucion()->getId() == 1) {
         /* recuperamos los datos enviados en el formulario*/
         $fecha = date("Y-m-d");
         $hora = date("h:i:s");
@@ -335,7 +335,7 @@ class TicketController extends AbstractController
     /* PROCESA EL FORMULARIO PARA CERRAR UN TICKET EN MESA DE AYUDA*/
     public function CU01CerrarMesa(Request $request, requestflash $requestflash, error $error){
 
-        if ($this->getUser()!= null && $this->getUser()->getNivel()==0) {
+        if ($this->getUser()!= null && $this->getUser()->getGrupoResolucion()->getId() == 1) {
             /* recuperamos los datos enviados en el formulario*/
             $NTicket = $request->request->get('idTicket');
             $Nobservacion = $request->request->get('observacion');
@@ -405,7 +405,7 @@ class TicketController extends AbstractController
     public function Consultar(Request $request, requestflash $requestflash,error $error){
 
 
-        if ($this->getUser()!= null && $this->getUser()->getNivel()==0) {
+        if ($this->getUser()!= null && $this->getUser()->getGrupoResolucion()->getId() == 1) {
             /* recuperamos los datos enviados en el formulario*/
             $Nticket = $request->request->get('idTicket');
             $Nlegajo = $request->request->get('legajo');
@@ -500,7 +500,7 @@ class TicketController extends AbstractController
 
     /* PROCESA EL FORMULARIO PARA DERIVAR UN TICKET */
     public function DerivarTicket(Request $request, requestflash $requestflash){
-        if ($this->getUser()!= null && $this->getUser()->getNivel()==0) {
+        if ($this->getUser()!= null && $this->getUser()->getGrupoResolucion()->getId() == 1) {
 
             //RECUPERAMOS LOS PARAMETROS ENVIADOS EN EL FORMULARIO
             $observaciones = $request->request->get('observacion');
@@ -605,7 +605,7 @@ class TicketController extends AbstractController
 
     //VAMOS A DERIVAR UN TICKET RECIEN CREADO QUE SE ENCUENTRA EN MESA DE AYUDA
     public function CU01DerivarMesa(Request $request, error $error, requestflash $requestflash){
-        if ($this->getUser()!= null && $this->getUser()->getNivel()==0) {
+        if ($this->getUser()!= null && $this->getUser()->getGrupoResolucion()->getId() == 1) {
             //Recuperamos los parametros enviados en el objeto request
             $Nticket = $request->request->get('ticket');
             $Ngrupo = $request->request->get('grupo');
