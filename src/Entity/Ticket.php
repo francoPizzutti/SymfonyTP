@@ -266,15 +266,7 @@ class Ticket
         return false;
     }
 
-    public function poseeIntervencionesAbiertas(){
-        foreach ($this->Intervenciones as $intevencion){
-            $idE = $intevencion->getHistorialIntervencion()->last()->getEstadoIntervencion()->getId();
-            if ($idE == 1 || $idE == 3){
-                return true;
-            }
-        }
-        return false;
-    }
+
 
     public function recuperarIntervencion(GrupoResolucion $grupoResolucion){
         foreach ($this->Intervenciones as $intevencion){

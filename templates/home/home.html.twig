@@ -2,7 +2,7 @@
 
 
 {% block menu %}
-    {% if app.user.Nivel == 0 %}
+    {% if app.user.GrupoResolucion.Id == 1 %}
         {% include 'MesaDeAyuda/menu/home.html.twig' %}
     {% else %}
        {% include 'GrupoDeResolucion/menu/home.html.twig' %}

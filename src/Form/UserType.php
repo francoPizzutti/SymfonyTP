@@ -21,12 +21,6 @@ class UserType extends AbstractType
             ->add('username', TextType::class)
             ->add('email', EmailType::class)
             ->add('password', PasswordType::class)
-            ->add('isActive', CheckboxType::class, array(
-                'label'    => 'Is Active?',
-                'required' => false,
-            ))
-
-            ->add('Nivel', NumberType::class)
             ->add('GrupoResolucion')
             ->add('Empleado')
         ;
