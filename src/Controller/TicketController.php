@@ -932,7 +932,7 @@ class TicketController extends AbstractController
             $historialNuevo = new ItemHistoricoIntervencion();
             $historialNuevo->setUser($user);
             $historialNuevo->setEstadoIntervencion($EstadoIntervencion);
-            $historialNuevo->cerrar();
+
 
             /* agregamos el nuevo item historico a la intervencion, y por ende al ticket*/
             $interMesa->addHistorialIntervencion($historialNuevo);

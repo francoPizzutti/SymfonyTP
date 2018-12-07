@@ -164,6 +164,7 @@ class Intervencion
     }
 
     public function cerrar(){
+        $this->HistorialIntervencion->last()->cerrar();
         $this->Fecha_Hasta = new DateTime();
     }
 
