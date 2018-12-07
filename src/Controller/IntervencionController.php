@@ -340,7 +340,7 @@ class IntervencionController extends AbstractController
     public function CerrarIntervencion(Intervencion $intervencion){
         //cerramos el último item histórico de intervención
         $intervencion->getHistorialIntervencion()->last()->cerrar();
-        $intervencion->cerrar();
+
 
         $repository = $this->getDoctrine()->getRepository(EstadoIntervencion::class);
         $estadoCerrada = $repository->find(4);
@@ -349,6 +349,7 @@ class IntervencionController extends AbstractController
         $itemHistorico->setEstadoIntervencion($estadoCerrada);
         $itemHistorico->setUser($this->getUser());
         $intervencion->addHistorialIntervencion($itemHistorico);
+        $intervencion->cerrar();
 
         return;
     }
