@@ -293,7 +293,7 @@ class TicketController extends AbstractController
 
            /* CREAMOS LA INTERVENCION PARA LA MESA DE AYUDA*/
            $repository = $this->getDoctrine()->getRepository(EstadoIntervencion::class);
-           $estadoInt = $repository->find(4);
+           $estadoInt = $repository->find(1);
 
            $intervencion = new Intervencion();
            $mesaAyuda->addIntervencione($intervencion);
