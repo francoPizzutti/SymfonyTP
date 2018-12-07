@@ -136,8 +136,9 @@ class IntervencionController extends AbstractController
                 //Vamos a recuperar el ticket y la intervencion por separado
                 $repository = $this->getDoctrine()->getRepository(Ticket::class);
                 $ticket = $repository->find($Nticket);
-                $repository = $this->getDoctrine()->getRepository(Intervencion::class);
-                $intervencion = $repository->find($Nintervencion);
+                $intervencion = $ticket->recuperarIntervencion($this->getUser()->getGrupoResolucion());
+
+                $intervencion->setObservaciones($Nobservacion);
 
 
 
@@ -153,18 +154,21 @@ class IntervencionController extends AbstractController
                         case 2:
                             //rechazada
                             $this->RechazarIntervencion($intervencion);
-                            $this->Devolver($ticket, "Rechazó la intervencion");
+                            $observacion = "Rechazó la intervencion con el siguiente mensaje: ".$Nobservacion;
+                            $this->Devolver($ticket, $observacion);
                              break;
                         case 3:
                             //pausada
                             $this->PausarIntervencion($intervencion);
-                            $this->Devolver($ticket, "Pausó la intervención");
+                            $observacion = "Pausó la intervencion con el siguiente mensaje: ".$Nobservacion;
+                            $this->Devolver($ticket, $observacion);
                               break;
                         case 4:
                            //cerrada
                             $this->CerrarIntervencion($intervencion);
-                           if($ticket->poseeIntervencionesAbiertas()){
-                               $this->Devolver($ticket, "Cerro la intervención");
+                            if($this->poseeIntervencionesAbiertas($ticket)){
+                                $observacion = "Cerró la intervencion con el siguiente mensaje: ".$Nobservacion;
+                               $this->Devolver($ticket, $observacion);
                            }else $this->Terminar($ticket);
                             break;
 
@@ -186,6 +190,8 @@ class IntervencionController extends AbstractController
                     ]);
                 }
                 /* FIN MAQUINA DE ESTADOS*/
+
+
 
                 $dto = $this->buildIntervencionDTO($Nticket);
                     return $this->render('GrupoDeResolucion/CU08ActualizarIntervencion.html.twig', [
@@ -300,6 +306,7 @@ class IntervencionController extends AbstractController
     public function RechazarIntervencion(Intervencion $intervencion){
         //cerramos el último item histórico de intervención
         $intervencion->getHistorialIntervencion()->last()->cerrar();
+        $intervencion->cerrar();
 
         $repository = $this->getDoctrine()->getRepository(EstadoIntervencion::class);
         $estadoRechazada = $repository->find(2);
@@ -309,9 +316,6 @@ class IntervencionController extends AbstractController
         $itemHistorico->setUser($this->getUser());
         $intervencion->addHistorialIntervencion($itemHistorico);
 
-        $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->persist($intervencion);
-        $entityManager->flush();
         return;
     }
 
@@ -328,9 +332,7 @@ class IntervencionController extends AbstractController
         $itemHistorico->setUser($this->getUser());
         $intervencion->addHistorialIntervencion($itemHistorico);
 
-        $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->persist($intervencion);
-        $entityManager->flush();
+
         return;
     }
 
@@ -348,9 +350,6 @@ class IntervencionController extends AbstractController
         $itemHistorico->setUser($this->getUser());
         $intervencion->addHistorialIntervencion($itemHistorico);
 
-        $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->persist($intervencion);
-        $entityManager->flush();
         return;
     }
 
@@ -421,5 +420,16 @@ class IntervencionController extends AbstractController
         $entityManager->flush();
         return;
 
+    }
+
+    public function poseeIntervencionesAbiertas(Ticket $ticket){
+        $intervenciones = $ticket->getIntervenciones();
+        foreach ($intervenciones as $intevencion){
+            $idE = $intevencion->getHistorialIntervencion()->last()->getEstadoIntervencion()->getId();
+            if ($idE == 1 || $idE == 3){
+                return true;
+            }
+        }
+        return false;
     }
 }

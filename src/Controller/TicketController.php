@@ -926,7 +926,7 @@ class TicketController extends AbstractController
 
             /* buscamos el estado cerrado de la intervencion desde la base de datos*/
             $repository = $this->getDoctrine()->getRepository(EstadoIntervencion::class);
-            $EstadoIntervencion = $repository->find(5);
+            $EstadoIntervencion = $repository->find(4);
 
             /* creamos el nuevo item historico de intervencion y le seteamos el usuario y el nuevo estado cerrado*/
             $historialNuevo = new ItemHistoricoIntervencion();
@@ -1040,6 +1040,7 @@ class TicketController extends AbstractController
         if($ticket->poseeIntervencionAbierta($gr)){
             $inT = $ticket->recuperarIntervencion($gr);
             $inT->setObservaciones($observaciones);
+            $inT->setFechaHasta(null);
             $hi = $inT->getHistorialIntervencion()->last();
             $hi->cerrar();
 
