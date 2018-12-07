@@ -1,4 +1,4 @@
--- --------------------------------------------------------
+﻿-- --------------------------------------------------------
 -- Host:                         localhost
 -- Versión del servidor:         5.7.19 - MySQL Community Server (GPL)
 -- SO del servidor:              Win64
@@ -137,7 +137,8 @@ INSERT INTO `migration_versions` (`version`) VALUES
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
 INSERT INTO `user` (`id`, `grupo_resolucion_id`, `empleado_id`, `username`, `email`, `password`, `roles`) VALUES
 	(1, 1, 1, 'lisandro', 'lisandrorattero@hotmail.com', '$2y$13$phuW/fIeFbfpS0uec1vgoe7RrQaLLvIeAs3sTlgphUyPq7/cPmGLC', 'administrador de redes'),
-	(2, 4, 4, 'hector', 'hector.or.cr@gmail.com', '$2y$13$uFinNH0OU60oMKI9IYp9/.bUGzPRDxlOlmwsX10zcNo4kt2c4rd0O', 'un rol');
+	(2, 4, 4, 'hector', 'hector.or.cr@gmail.com', '$2y$13$uFinNH0OU60oMKI9IYp9/.bUGzPRDxlOlmwsX10zcNo4kt2c4rd0O', 'un rol'),
+	(3, 2, 3, 'franco', 'pfraanco@hotmail.com', '$2y$13$UoOBiPPFZPhDpc6uLvZeUeJMAvDF.fGmG4gIiHTxrCGq0pwBFvKjO', 'un rol');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
