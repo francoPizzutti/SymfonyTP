@@ -1,9 +1,3 @@
-﻿-- --------------------------------------------------------
--- Host:                         localhost
--- Versión del servidor:         5.7.19 - MySQL Community Server (GPL)
--- SO del servidor:              Win64
--- HeidiSQL Versión:             9.4.0.5125
--- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET NAMES utf8 */;
@@ -11,14 +5,12 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
--- Volcando datos para la tabla symfonycopia.cargo: ~0 rows (aproximadamente)
 /*!40000 ALTER TABLE `cargo` DISABLE KEYS */;
 INSERT INTO `cargo` (`id`, `descripcion`) VALUES
 	(1, 'Usuario de Mesa de Ayuda'),
 	(2, 'Usuario de Grupo de Resolución');
 /*!40000 ALTER TABLE `cargo` ENABLE KEYS */;
 
--- Volcando datos para la tabla symfonycopia.clasificacion_ticket: ~0 rows (aproximadamente)
 /*!40000 ALTER TABLE `clasificacion_ticket` DISABLE KEYS */;
 INSERT INTO `clasificacion_ticket` (`id`, `estado_cla_id`, `user_id`, `descripcion`, `nombre`) VALUES
 	(1, 1, 1, 'descripcion', 'Cambio de Configuracion de Sistema Operativo de PC'),
@@ -37,7 +29,6 @@ INSERT INTO `clasificacion_ticket` (`id`, `estado_cla_id`, `user_id`, `descripci
 	(14, 1, 1, 'Solicitud de soporte en el uso de alguna aplicación o sistema', 'Solicitud de soporte en el uso de alguna aplicación o sistema');
 /*!40000 ALTER TABLE `clasificacion_ticket` ENABLE KEYS */;
 
--- Volcando datos para la tabla symfonycopia.direccion: ~0 rows (aproximadamente)
 /*!40000 ALTER TABLE `direccion` DISABLE KEYS */;
 INSERT INTO `direccion` (`id`, `calle`, `piso`, `numero`, `oficina`) VALUES
 	(1, 'San Martin ', 5, 3049, 'secretaria de extensión'),
@@ -48,7 +39,6 @@ INSERT INTO `direccion` (`id`, `calle`, `piso`, `numero`, `oficina`) VALUES
 	(6, '4 de Enero', 2, 334, 'DMZ');
 /*!40000 ALTER TABLE `direccion` ENABLE KEYS */;
 
--- Volcando datos para la tabla symfonycopia.empleado: ~0 rows (aproximadamente)
 /*!40000 ALTER TABLE `empleado` DISABLE KEYS */;
 INSERT INTO `empleado` (`id`, `cargo_id`, `direccion_id`, `legajo`, `nombre`, `apellido`, `telefono_interno`, `telefono_directo`) VALUES
 	(1, 1, 1, 1, 'Lisandro Adolfo', 'Rattero', '344', '3424999235'),
@@ -58,21 +48,18 @@ INSERT INTO `empleado` (`id`, `cargo_id`, `direccion_id`, `legajo`, `nombre`, `a
 	(5, 1, 5, 5, 'Cristian ', 'Impini', '235', '4444444444');
 /*!40000 ALTER TABLE `empleado` ENABLE KEYS */;
 
--- Volcando datos para la tabla symfonycopia.estado_clasificacion_ticket: ~0 rows (aproximadamente)
 /*!40000 ALTER TABLE `estado_clasificacion_ticket` DISABLE KEYS */;
 INSERT INTO `estado_clasificacion_ticket` (`id`, `descripcion`) VALUES
 	(1, 'Activa'),
 	(2, 'InActiva');
 /*!40000 ALTER TABLE `estado_clasificacion_ticket` ENABLE KEYS */;
 
--- Volcando datos para la tabla symfonycopia.estado_grupo_resolucion: ~0 rows (aproximadamente)
 /*!40000 ALTER TABLE `estado_grupo_resolucion` DISABLE KEYS */;
 INSERT INTO `estado_grupo_resolucion` (`id`, `descripcion`) VALUES
 	(1, 'Activo'),
 	(2, 'InActivo');
 /*!40000 ALTER TABLE `estado_grupo_resolucion` ENABLE KEYS */;
 
--- Volcando datos para la tabla symfonycopia.estado_intervencion: ~0 rows (aproximadamente)
 /*!40000 ALTER TABLE `estado_intervencion` DISABLE KEYS */;
 INSERT INTO `estado_intervencion` (`id`, `descripcion`) VALUES
 	(1, 'Asignada'),
@@ -81,7 +68,6 @@ INSERT INTO `estado_intervencion` (`id`, `descripcion`) VALUES
 	(4, 'Cerrada');
 /*!40000 ALTER TABLE `estado_intervencion` ENABLE KEYS */;
 
--- Volcando datos para la tabla symfonycopia.estado_ticket: ~0 rows (aproximadamente)
 /*!40000 ALTER TABLE `estado_ticket` DISABLE KEYS */;
 INSERT INTO `estado_ticket` (`id`, `descripcion`) VALUES
 	(1, 'Abierto Sin Derivar'),
@@ -107,15 +93,12 @@ INSERT INTO `grupo_resolucion` (`id`, `estado_id`, `nombre`, `nivel`) VALUES
 	(12, 1, 'Desarrollo sistema de reclamos', 2);
 /*!40000 ALTER TABLE `grupo_resolucion` ENABLE KEYS */;
 
--- Volcando datos para la tabla symfonycopia.intervencion: ~0 rows (aproximadamente)
 /*!40000 ALTER TABLE `intervencion` DISABLE KEYS */;
 /*!40000 ALTER TABLE `intervencion` ENABLE KEYS */;
 
--- Volcando datos para la tabla symfonycopia.item_historico_clasificacion: ~0 rows (aproximadamente)
 /*!40000 ALTER TABLE `item_historico_clasificacion` DISABLE KEYS */;
 /*!40000 ALTER TABLE `item_historico_clasificacion` ENABLE KEYS */;
 
--- Volcando datos para la tabla symfonycopia.item_historico_estados: ~0 rows (aproximadamente)
 /*!40000 ALTER TABLE `item_historico_estados` DISABLE KEYS */;
 /*!40000 ALTER TABLE `item_historico_estados` ENABLE KEYS */;
 
@@ -123,17 +106,9 @@ INSERT INTO `grupo_resolucion` (`id`, `estado_id`, `nombre`, `nivel`) VALUES
 /*!40000 ALTER TABLE `item_historico_intervencion` DISABLE KEYS */;
 /*!40000 ALTER TABLE `item_historico_intervencion` ENABLE KEYS */;
 
--- Volcando datos para la tabla symfonycopia.migration_versions: ~1 rows (aproximadamente)
-/*!40000 ALTER TABLE `migration_versions` DISABLE KEYS */;
-INSERT INTO `migration_versions` (`version`) VALUES
-	('20181206201911');
-/*!40000 ALTER TABLE `migration_versions` ENABLE KEYS */;
-
--- Volcando datos para la tabla symfonycopia.ticket: ~0 rows (aproximadamente)
 /*!40000 ALTER TABLE `ticket` DISABLE KEYS */;
 /*!40000 ALTER TABLE `ticket` ENABLE KEYS */;
 
--- Volcando datos para la tabla symfonycopia.user: ~0 rows (aproximadamente)
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
 INSERT INTO `user` (`id`, `grupo_resolucion_id`, `empleado_id`, `username`, `email`, `password`, `roles`) VALUES
 	(1, 1, 1, 'lisandro', 'lisandrorattero@hotmail.com', '$2y$13$phuW/fIeFbfpS0uec1vgoe7RrQaLLvIeAs3sTlgphUyPq7/cPmGLC', 'administrador de redes'),
