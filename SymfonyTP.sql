@@ -1,6 +1,8 @@
-﻿INSERT INTO `estado_clasificacion_ticket` (`id`, `descripcion`) VALUES
+
+INSERT INTO `estado_clasificacion_ticket` (`id`, `descripcion`) VALUES
   (1, 'Activa'),
   (2, 'InActiva');
+
 
 INSERT INTO `estado_grupo_resolucion` (`id`, `descripcion`) VALUES
 	(1, 'Activo'),
